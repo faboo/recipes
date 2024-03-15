@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html class='busy'>
+<head>
+	<meta charset="UTF-8">
+	<meta name="application-name" content="Recipes">
+	<link rel="icon" href="/favicon.ico" sizes="any">
+	<script>
+		window.startLoad = new Date()
+	</script>
+
+	<!-- WIDGY:PRE -->
+
+	<link rel="manifest" href="manifest.json">
+	<link rel="stylesheet" href="style.css">
+
+	<script type="module">
+		import * as widgy from './widgy/widgy.js'
+		import App from './app.js'
+
+		widgy.start(App)
+	</script>
+
+</head>
+<body>
+	<div id='busy'>
+	  ❍
+	</div>
+
+	<selector selected="@selectedPane">
+		<select-pane key="list">
+			<recipe-list
+				newClicked="onNewClicked"
+				editClicked="onEditClicked"
+				viewClicked="onViewClicked"
+				deleteClicked="onDeleteClicked"
+				searchClicked="onSearchClicked"
+				clearClicked="onClearClicked"
+				dropboxConnect="onDropboxConnect"
+				recipes="@recipes"/>
+		</select-pane>
+
+		<select-pane key="new">
+			<edit-recipe recipe="@selectedRecipe" saveClicked="onRecipeSaved" cancelClicked="onCancelled"/>
+		</select-pane>
+
+		<select-pane key="edit">
+			<edit-recipe recipe="@selectedRecipe" saveClicked="onRecipeSaved" cancelClicked="onCancelled"/>
+		</select-pane>
+
+		<select-pane key="view">
+			<view-recipe recipe="@selectedRecipe" closeClicked="onCancelled"/>
+		</select-pane>
+	</selector>
+</body>
+</html>
+

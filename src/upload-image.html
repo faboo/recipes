@@ -1,0 +1,32 @@
+<template>
+	<style>
+		{
+			display: inline-block;
+			position: relative;
+		}
+		input {
+			display: none;
+		}
+		img {
+			height: 4rem;
+			width: 4rem;
+		}
+		widgy-button{
+			position: absolute;
+			right: .25rem;
+			bottom: .25rem;
+		}
+		button{
+			border-style: none;
+			background: none;
+			color: #bb1717;
+			font-size: 1.2rem;
+			text-shadow: #fff 0 0 3px;
+		}
+	</style>
+	<img src="@imageObject">
+	<input
+		type="file"
+		accept="image/*">
+	<button onClick="onClearClicked" hidden='@hideClear'>ⓧ</button>
+</template>

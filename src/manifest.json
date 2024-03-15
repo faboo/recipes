@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "name": "Recipes",
+  "short_name": "Recipes",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#e8e1d8",
+  "description": "All the recipes!",
+  "icons": [{
+    "src": "favicon.ico",
+    "type": "image/ico"
+  }],
+  "related_applications": []
+}

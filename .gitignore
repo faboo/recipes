@@ -1,0 +1,11 @@
+dist/
+*.swp
+*.swo
+*.log
+*.pyc
+.lvimrc
+.DS_Store
+.cache
+.vscode
+.coverage
+.pytest_cache

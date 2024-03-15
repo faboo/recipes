@@ -1,0 +1,112 @@
+<template>
+	<style>
+		> header {
+			display: flex;
+		}
+
+		h1 {
+			flex-grow: 1;
+			margin-right: 1em;
+		}
+
+		.buttons {
+			flex-grow: 1;
+			display: flex;
+			flex-wrap: wrap-reverse;
+			justify-content: space-between;
+			align-content: space-around;
+		}
+
+		#new-recipe {
+			align-self: center;
+		}
+		#new-recipe button {
+			padding: 1ex;
+		}
+
+		#dropbox-connect {
+			align-self: center;
+		}
+		#dropbox-connect button {
+			background: #0062ff;
+			color: #eee;
+			border-radius: .5ex;
+			border-width: 2px;
+			border-color: #7badfe;
+			padding: 3px;
+		}
+		#dropbox-connect button::after {
+			content: "Connect Dropbox"
+		}
+		#dropbox-connect button:disabled {
+			background: #7ea8ea;
+			/* color: #b7b7b7;*/
+		}
+		#dropbox-connect button:disabled::after {
+			content: "Dropbox Connected"
+		}
+
+		.search {
+			margin-bottom: .5rem;
+		}
+
+		.search > * {
+			display: inline-block;
+			margin: .1rem;
+		}
+
+		items-view {
+			display: block;
+			height: 74vh;
+			background: #ffffff50;
+			border-width: 1px;
+			border-style: solid;
+			border-color: gray;
+			overflow: scroll;
+		}
+
+		item-view {
+			display: block;
+			padding-top: .2em;
+			padding-bottom: .2em;
+			padding-left: .5em;
+			padding-right: .5em;
+		}
+		item-view:nth-child(even) {
+			background: #00000021;
+		}
+	</style>
+
+	<header>
+		<h1>Recipes</h1>
+		<div class="buttons">
+			<button id="dropbox-connect" onClick="onDropboxConnect" disabled="@application.dropboxConnected"></button>
+			<button id="new-recipe" onClick="onNewClicked">New Recipe</button>
+		</div>
+	</header>
+
+	<fieldset class="search">
+		<legend>Search</legend>
+
+		<label>Name <text-input text="@<nameSearch"></text-input></label>
+
+		<label>Ingredients <text-input text="@<ingredientSearch"></text-input></label>
+
+		<label>Tags <text-input text="@<tagSearch"></text-input></label>
+
+		<button onClick="onSearchClicked" default="true">Search</button>
+
+		<button onClick="onClearClicked">Clear</button>
+	</fieldset>
+
+	<items-view id="recipe-list" items="@recipes">
+		<template>
+			<recipe-list-item
+				recipe="@item"
+				editClicked="context.onEditClicked"
+				viewClicked="context.onViewClicked"
+				deleteClicked="context.onDeleteClicked"
+				></recipe-list-item>
+		</template>
+	</items-view>
+</template>
