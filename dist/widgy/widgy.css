@@ -1,0 +1,25 @@
+* {
+	box-sizing: border-box;
+}
+
+html, body {
+	font-size: 2vh;
+}
+
+body {
+	margin: 1em;
+}
+
+input, button, select, textarea {
+	font-size: 1rem;
+}
+
+widgy-dialog-gutter > * {
+	position: fixed;
+	z-index: 10000;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: #4444;
+}

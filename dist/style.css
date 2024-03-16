@@ -1,0 +1,51 @@
+html{
+	min-height: 100vh;
+	background: #e8e1d8;
+}
+
+html.busy{
+	cursor: wait;
+}
+
+html:not(html.busy) #busy {
+	display: none;
+}
+
+dialog{
+	background: #e8e1d8;
+}
+
+h1, h2 {
+	font-family: sans-serif;
+}
+
+label, legend {
+	font-family: sans-serif;
+}
+
+p {
+	font-family: serif;
+}
+
+@keyframes busy {
+	0% {
+		transform: rotate(0deg);
+	}
+	50% {
+		transform: rotate(180deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+#busy {
+	animation: busy 1s infinite;
+	animation-timing-function: linear;
+	position: absolute;
+	top: 30vh;
+	left: 40vw;
+	font-size: 20vw;
+	font-weight: bold;
+	color: gray;
+}
