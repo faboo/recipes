@@ -26,9 +26,12 @@ export default class ViewRecipe extends Widget {
 		let recipeJson = JSON.stringify(this.recipe.toPOJO())
 		let shareUrl = new URL(location)
 
-		shareUrl.hash = "#view/recipeJSON="+encodeURIComponent(recipeJson)
+		// This should work but doesn't
+		//shareUrl.hash = "#view/recipeJSON="+encodeURIComponent(recipeJson)
+		shareUrl.hash = ''
+		shareUrl = String(shareUrl)+'#view/recipeJSON='+encodeURIComponent(recipeJson)
 
-		navigator.clipboard.writeText(new String(shareUrl))
+		navigator.clipboard.writeText(shareUrl)
 
 		this.application.busy = false
 	}
