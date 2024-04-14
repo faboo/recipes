@@ -2,6 +2,7 @@
 *.swo
 *.log
 *.pyc
+*.zip
 .lvimrc
 .DS_Store
 .cache
