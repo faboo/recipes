@@ -16,7 +16,7 @@ class Identity:
 def getIdentity(req:func.HttpRequest) -> Identity:
     claimsBytes = base64.b64decode(req.headers['X-MS-CLIENT-PRINCIPAL'])
     claims = json.loads(claimsBytes)
-    identity = Identity(email=claims['userDetails'], roles=clames['userRoles'])
+    identity = Identity(email=claims['userDetails'], roles=claims['userRoles'])
     return identity
 
 
