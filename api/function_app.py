@@ -22,13 +22,18 @@ def getIdentity(req:func.HttpRequest) -> Identity:
 
 @app.route(route='whoami')
 def whoami(req:func.HttpRequest) -> func.HttpResponse:
-    #claimsBytes = base64.b64decode(req.headers['X-MS-CLIENT-PRINCIPAL'])
-    #claims = json.loads(claimsBytes)
-    #email = req.headers['X-MS-CLIENT-PRINCIPAL-NAME']
-    identity = getIdentity(req)
+    try:
+        #claimsBytes = base64.b64decode(req.headers['X-MS-CLIENT-PRINCIPAL'])
+        #claims = json.loads(claimsBytes)
+        #email = req.headers['X-MS-CLIENT-PRINCIPAL-NAME']
+        identity = getIdentity(req)
 
-    response = {'ok': True, 'response': dataclasses.asdict() }
+        response = {'ok': True, 'response': dataclasses.asdict() }
+    except Exception as ex:
+        response = {'ok': False, 'response': str(ex) }
+
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
+        
 
 @app.route(route='upsert')
 def upsert(req:func.HttpRequest) -> func.HttpResponse:
