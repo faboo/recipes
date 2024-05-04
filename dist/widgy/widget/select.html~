@@ -1,0 +1,35 @@
+<template>
+	<style>
+		{
+			display: inline-block;
+		}
+
+		div.select-container{
+		}
+
+		div.edit-container{
+			width: 100%;
+			position: relative;
+		}
+
+		input {
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 1em;
+		}
+		
+		select {
+			width: 100%;
+		}
+	</style>
+
+	<div class="select-container">
+		<div class="edit-container">
+			<input type="text"></input>
+		</div>
+		<select name="@name" autocomplete="@autocomplete" value="@=selected">
+		</select>
+	</div>
+</template>

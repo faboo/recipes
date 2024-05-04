@@ -23,8 +23,13 @@ export default class ViewRecipe extends Widget {
 	onShareClicked(){
 		this.application.busy = true
 
-		let recipeJson = JSON.stringify(this.recipe.toPOJO())
-		let shareUrl = new URL(location)
+		let recipe = this.recipe.toPOJO()
+		let recipeJson
+		let shareUrl
+
+		delete recipe.image
+		recipeJson = JSON.stringify(recipe)
+		shareUrl = new URL(location)
 
 		// This should work but doesn't
 		//shareUrl.hash = "#view/recipeJSON="+encodeURIComponent(recipeJson)
