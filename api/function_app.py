@@ -12,7 +12,7 @@ def whoami(req:func.HttpRequest) -> func.HttpResponse:
     claimsBytes = base64.b64decode(req.headers['X-MS-CLIENT-PRINCIPAL'])
     claims = json.loads(claimsBytes)
 
-    response = {'ok': True, 'headers': req.headers, 'claims': claims}
+    response = {'ok': True, 'claims': claims}
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
 
 @app.route(route='upsert')
