@@ -1,5 +1,8 @@
 {
   "trailingSlash": "auto",
+  "platform": {
+    "apiRuntime": "python:3.10"
+  },
   "routes": [
     {
       "route": "/api/upsert",
