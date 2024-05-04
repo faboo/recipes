@@ -13,20 +13,21 @@ class Identity:
     roles:list[str]
 
 
-def getIdentity(req) -> 
+def getIdentity(req:func.HttpRequest) -> Identity:
+    claimsBytes = base64.b64decode(req.headers['X-MS-CLIENT-PRINCIPAL'])
+    claims = json.loads(claimsBytes)
+    identity = Identity(email=claims['userDetails'], roles=clames['userRoles'])
+    return identity
 
 
 @app.route(route='whoami')
 def whoami(req:func.HttpRequest) -> func.HttpResponse:
-    claimsBytes = base64.b64decode(req.headers['X-MS-CLIENT-PRINCIPAL'])
-    claims = json.loads(claimsBytes)
-    email = req.headers['X-MS-CLIENT-PRINCIPAL-NAME']
-    identity = \
-        { 'email': claims['userDetails']
-        , 'roles': clames['userRoles']
-        }
+    #claimsBytes = base64.b64decode(req.headers['X-MS-CLIENT-PRINCIPAL'])
+    #claims = json.loads(claimsBytes)
+    #email = req.headers['X-MS-CLIENT-PRINCIPAL-NAME']
+    identity = getIdentity(req)
 
-    response = {'ok': True, 'claims': claims, 'email': email}
+    response = {'ok': True, 'response': dataclasses.asdict() }
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
 
 @app.route(route='upsert')
