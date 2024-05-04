@@ -12,8 +12,8 @@
     {
       "route": "/logout",
       "redirect": "/.auth/logout"
-    },
-  ,
+    }
+	],
   "navigationFallback": {
     "rewrite": "index.html",
     "exclude": ["/images/*.{png,jpg,gif}", "/css/*"]
