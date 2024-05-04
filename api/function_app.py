@@ -28,7 +28,7 @@ def whoami(req:func.HttpRequest) -> func.HttpResponse:
         #email = req.headers['X-MS-CLIENT-PRINCIPAL-NAME']
         identity = getIdentity(req)
 
-        response = {'ok': True, 'response': dataclasses.asdict() }
+        response = {'ok': True, 'response': dataclasses.asdict(identity) }
     except Exception as ex:
         response = {'ok': False, 'response': str(ex) }
 
