@@ -4,4 +4,4 @@
 
 cd dist
 
-zip -rn .swp:.swo ../recipes.zip *
+#zip -rn .swp:.swo ../recipes.zip *
