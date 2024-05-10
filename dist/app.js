@@ -30,6 +30,7 @@ export class Api extends srch.RemoteStore{
 			throw Error('remote unauthorized')
 		}
 
+		response = await response.json()
 		return response
 	}
 
