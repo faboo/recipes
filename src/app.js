@@ -34,7 +34,7 @@ export class Api extends srch.RemoteStore{
 	}
 
 	async init(){
-		response = await this.post('whoami')
+		let response = await this.post('whoami')
 		console.log(response.response.roles)
 
 		if(response.response.roles.indexOf('chef') >= 0)
