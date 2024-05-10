@@ -4,6 +4,11 @@ import * as srch from './widgy/storage.js'
 import {Recipe} from './recipe.js'
 
 export class Api extends srch.RemoteStore{
+	constructor(){
+		super()
+		this.connected = false
+	}
+
 	async post(url, body){
 		let endpoint = 'recipes.halfpanda.dev/api/'
 		let bodyStr = JSON.stringify(body)
@@ -26,6 +31,14 @@ export class Api extends srch.RemoteStore{
 		}
 
 		return response
+	}
+
+	async init(){
+		response = await this.post('whoami')
+		console.log(response.response.roles)
+
+		if(response.response.roles.indexOf('chef') >= 0)
+			this.connected = true
 	}
 
 	async upsert(object, objectId, objectName){
@@ -105,11 +118,14 @@ export default class App extends widgy.Application{
 			})
 
 		let recipeDB = this.getDatabase('recipes')
+		let api = new Api()
+
+		await api.init()
 
 		recipeDB.addRemoteConnectListener(() => this.dropboxConnected = true)
 		recipeDB.addRemoteDisconnectListener(() => this.dropboxConnected = false)
 		//recipeDB.setRemoteStore(new widgy.Dropbox('rnqhasm3j9zrf2n', ''))
-		recipeDB.setRemoteStore(new Api())
+		recipeDB.setRemoteStore(api)
 
 		await recipeDB.syncRemote()
 
