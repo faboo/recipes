@@ -13,7 +13,7 @@ export class Api extends srch.RemoteStore{
 		let response
 
 		response = await fetch(
-			'https://'+endpoint + url
+			'https://'+endpoint + url,
 			{ method: 'POST'
 			, body: bodyStr
 			, headers: headers
@@ -109,7 +109,7 @@ export default class App extends widgy.Application{
 		recipeDB.addRemoteConnectListener(() => this.dropboxConnected = true)
 		recipeDB.addRemoteDisconnectListener(() => this.dropboxConnected = false)
 		//recipeDB.setRemoteStore(new widgy.Dropbox('rnqhasm3j9zrf2n', ''))
-		recipeDB.setRemoteStore(Api())
+		recipeDB.setRemoteStore(new Api())
 
 		await recipeDB.syncRemote()
 
