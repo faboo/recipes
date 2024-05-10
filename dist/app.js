@@ -3,6 +3,56 @@ import * as dialog from './widgy/dialog.js'
 import * as srch from './widgy/storage.js'
 import {Recipe} from './recipe.js'
 
+export class Api extends srch.RemoteStore{
+	async post(url, body){
+		let endpoint = 'recipes.halfpanda.dev/api/'
+		let bodyStr = JSON.stringify(body)
+		let headers =
+			{ 'Content-Type': 'application/json'
+			}
+		let response
+
+		response = await fetch(
+			'https://'+endpoint + url,
+			{ method: 'POST'
+			, body: bodyStr
+			, headers: headers
+			})
+
+		console.log(response)
+
+		if(response.status == 401){
+			throw Error('remote unauthorized')
+		}
+
+		return response
+	}
+
+	async upsert(object, objectId, objectName){
+		await this.post('upsert', object)
+	}
+
+	async getById(objectId, objectName){
+		let response = await this.post('get', {'id': objectId})
+
+		response = await response.json()
+		return response['result']
+	}
+
+	async removeById(objectId, objectName){
+		await this.post('delete', {'id': objectId})
+	}
+
+	async getAll(objectName){
+		let response = await this.post('list')
+
+		response = await response.json()
+
+		return response['result']
+	}
+}
+
+
 export default class App extends widgy.Application{
 	constructor(){
 		super()
@@ -58,7 +108,8 @@ export default class App extends widgy.Application{
 
 		recipeDB.addRemoteConnectListener(() => this.dropboxConnected = true)
 		recipeDB.addRemoteDisconnectListener(() => this.dropboxConnected = false)
-		recipeDB.setRemoteStore(new widgy.Dropbox('rnqhasm3j9zrf2n', ''))
+		//recipeDB.setRemoteStore(new widgy.Dropbox('rnqhasm3j9zrf2n', ''))
+		recipeDB.setRemoteStore(new Api())
 
 		await recipeDB.syncRemote()
 
