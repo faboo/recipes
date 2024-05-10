@@ -49,7 +49,6 @@ export class Api extends srch.RemoteStore{
 	async getById(objectId, objectName){
 		let response = await this.post('get', {'id': objectId})
 
-		response = await response.json()
 		return response['result']
 	}
 
@@ -59,8 +58,6 @@ export class Api extends srch.RemoteStore{
 
 	async getAll(objectName){
 		let response = await this.post('list')
-
-		response = await response.json()
 
 		return response['result']
 	}
