@@ -63,7 +63,7 @@ export class Api extends srch.RemoteStore{
 		for(let object in response.result){
 			objects.push(
 				{ id: object.id
-				, modified: new Date(entry.modified_time)
+				, modified: new Date(object.modified_time)
 				, size: keys(object).length()
 				, content: object
 				})
