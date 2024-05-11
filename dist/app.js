@@ -64,7 +64,7 @@ export class Api extends srch.RemoteStore{
 			objects.push(
 				{ id: entry.id
 				, modified: new Date(entry.modified_time)
-				, size: keys(entry).length()
+				, size: keys(entry).length
 				, content: entry
 				})
 		}
