@@ -10,7 +10,10 @@ export default class RawImage extends Widget {
 
 	onBase64Change(){
 		if(this.base64)
-			this.src = 'data:image/*;base64,'+this.base64
+			if(RegExp('^https:\/\/').match(this.base64))
+				this.src = this.base64
+			else
+				this.src = 'data:image/*;base64,'+this.base64
 		else
 			this.src = ''
 	}

@@ -115,6 +115,9 @@ def list(req:func.HttpRequest) -> func.HttpResponse:
     with Recipes(getIdentity(req)) as store:
         recipes = store.list()
 
+    for recipe in recipes:
+        recipe['image'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
+
     response = {'ok': True, 'result': recipes}
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
 
@@ -125,8 +128,24 @@ def get(req:func.HttpRequest) -> func.HttpResponse:
     with Recipes(getIdentity(req)) as store:
         recipe = store.get(request['id'])
     
+    recipe['image'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
     response = {'ok': True, 'result': recipe}
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
+
+
+@app.route(route='image/{id}')
+def image(req:func.HttpRequest) -> func.HttpResponse:
+    request = req.get_json()
+    recipeId = req.route_params.get('id')
+
+    with Recipes(getIdentity(req)) as store:
+        recipe = store.get(recipeId)
+    
+    if recipe.get('image'):
+        image = base64.b64decode(recipe['image'])
+        return func.HttpResponse(image, mimetype="image")
+    else:
+        return func.HttpResponse(status_code=404)
 
 
 @app.route(route='delete')
