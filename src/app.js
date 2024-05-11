@@ -58,8 +58,18 @@ export class Api extends srch.RemoteStore{
 
 	async getAll(objectName){
 		let response = await this.post('list')
+		let objects = []
 
-		return response['result']
+		for(let object in response.result){
+			objects.push(
+				{ id: object.id
+				, modified: new Date(entry.modified_time)
+				, size: keys(object).length()
+				, content: object
+				})
+		}
+
+		return objects
 	}
 }
 
