@@ -150,7 +150,6 @@ def get(req:func.HttpRequest) -> func.HttpResponse:
 
 @app.route(route='image/{id}')
 def image(req:func.HttpRequest) -> func.HttpResponse:
-    request = req.get_json()
     recipeId = req.route_params.get('id')
 
     logging.info('Getting image for %s', recipeId)
