@@ -45,6 +45,9 @@ class Recipes:
                 existing = json.loads(blob.download_blob(encoding='utf-8'))
             except Exception:
                 pass
+
+            if 'imageUrl' in recipe:
+                del recipe['imageUrl']
             recipe = {**existing, **recipe}
             blob.upload_blob(json.dumps(recipe).encode('utf-8'))
 
@@ -57,7 +60,13 @@ class Recipes:
         for blobProps in blobs:
             with self.container.get_blob_client(blob=blobProps.name) as blob:
                 content = blob.download_blob(encoding='utf-8')
-                recipes.append(json.load(content))
+                recipe = json.load(content)
+
+                recipe['imageUrl'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
+                if 'image' in recipe:
+                    del recipe['image']
+
+                recipes.append(recipe)
 
         return recipes
 
@@ -69,7 +78,11 @@ class Recipes:
 
         with self.container.get_blob_client(name) as blob:
             content = blob.download_blob(encoding='utf-8')
-            return json.load(content)
+            recipe = json.load(content)
+            recipe['imageUrl'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
+            if 'image' in recipe:
+                del recipe['image']
+            return recipe
 
 
     def delete(self, id:str) -> None:
@@ -110,7 +123,6 @@ def whoami(req:func.HttpRequest) -> func.HttpResponse:
 def upsert(req:func.HttpRequest) -> func.HttpResponse:
     request = req.get_json()
     with Recipes(getIdentity(req)) as store:
-        del request['imageUrl']
         store.upsert(request)
 
     response = {'ok': True}
@@ -122,10 +134,6 @@ def list(req:func.HttpRequest) -> func.HttpResponse:
     with Recipes(getIdentity(req)) as store:
         recipes = store.list()
 
-    for recipe in recipes:
-        recipe['imageUrl'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
-        del recipe['image']
-
     response = {'ok': True, 'result': recipes}
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
 
@@ -136,8 +144,6 @@ def get(req:func.HttpRequest) -> func.HttpResponse:
     with Recipes(getIdentity(req)) as store:
         recipe = store.get(request['id'])
     
-    recipe['imageUrl'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
-    del recipe['image']
     response = {'ok': True, 'result': recipe}
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
 
