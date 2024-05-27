@@ -1,7 +1,7 @@
 import {Model} from './widgy/widgy.js'
 
 export default class Fraction extends Model{
-	static FRACTIONS = [' ', '¼', '⅓', '½', '⅔']
+	static FRACTIONS = [' ', '¼', '⅓', '½', '⅔', '¾']
 
 	constructor(template){
 		super()
