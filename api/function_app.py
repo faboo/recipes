@@ -94,7 +94,7 @@ class Recipes:
             content = blob.download_blob(encoding='utf-8')
             recipe = json.load(content)
             if 'image' in recipe:
-                image = recipe['image'].base64.b64decode(recipe['image'])
+                image = base64.b64decode(recipe['image'])
             else:
                 image = None
 
