@@ -35,11 +35,16 @@ export class Api extends srch.RemoteStore{
 	}
 
 	async init(){
-		let response = await this.post('whoami')
-		let result = response.result || { roles: [] }
+		try{
+			let response = await this.post('whoami')
+			let result = response.result || { roles: [] }
 
-		if(result.roles.indexOf('chef') >= 0)
-			this.connected = true
+			if(result.roles.indexOf('chef') >= 0)
+				this.connected = true
+		}
+		catch(ex){
+			console.error(ex)
+		}
 	}
 
 	async upsert(object, objectId, objectName){
