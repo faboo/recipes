@@ -98,10 +98,10 @@ def whoami(req:func.HttpRequest) -> func.HttpResponse:
 
         response = \
             { 'ok': True
-            , 'response': dataclasses.asdict(identity) if identity else None
+            , 'result': dataclasses.asdict(identity) if identity else None
             }
     except Exception as ex:
-        response = {'ok': False, 'response': str(ex) }
+        response = {'ok': False, 'result': str(ex) }
 
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
 

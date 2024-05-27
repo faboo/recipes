@@ -36,9 +36,9 @@ export class Api extends srch.RemoteStore{
 
 	async init(){
 		let response = await this.post('whoami')
-		console.log(response.response.roles)
+		let result = response.result || { roles: [] }
 
-		if(response.response.roles.indexOf('chef') >= 0)
+		if(result.roles.indexOf('chef') >= 0)
 			this.connected = true
 	}
 
