@@ -141,11 +141,15 @@ def whoami(req:func.HttpRequest) -> func.HttpResponse:
 
 @app.route(route='upsert')
 def upsert(req:func.HttpRequest) -> func.HttpResponse:
-    request = req.get_json()
-    with Recipes(getIdentity(req)) as store:
-        store.upsert(request)
+    try:
+        request = req.get_json()
+        with Recipes(getIdentity(req)) as store:
+            store.upsert(request)
 
-    response = {'ok': True}
+        response = {'ok': True}
+    except Exception as ex:
+        response = {'ok': False, 'result': str(ex) }
+
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
 
 
