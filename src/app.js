@@ -137,7 +137,7 @@ export default class App extends widgy.Application{
 
 		await recipeDB.syncRemote()
 
-		this.dropboxConnected = recipeDB.remoteConnected
+		//this.dropboxConnected = recipeDB.remoteConnected
 
 		for(let recipe of await recipeDB.getAll(Recipe))
 			this.recipes.push(new Recipe(recipe))
