@@ -228,6 +228,7 @@
 		<button onClick="onSaveClicked">Save</button>
 		<button onClick="onCancelClicked">Cancel</button>
 
+		<img src="@editRecipe.imageUrl"></img>
 		<upload-image image="@=editRecipe.image"></upload-image>
 	</div>
 
@@ -320,6 +321,7 @@
 		<button onClick="onSaveClicked">Save</button>
 		<button onClick="onCancelClicked">Cancel</button>
 
+		<img src="@editRecipe.imageUrl"></img>
 		<upload-image image="@=editRecipe.image"></upload-image>
 	</div>
 
@@ -971,7 +973,7 @@
 	</style>
 
 	<!--<raw-img id='view-image' base64="@recipe.image"></raw-img>-->
-	<img id='view-image' base64="@recipe.imageUrl"></img>
+	<img id='view-image' src="@recipe.imageUrl"></img>
 
 	<h1>{recipe.name}</h1>
 
@@ -1059,7 +1061,7 @@
 	</style>
 
 	<!--<raw-img id='view-image' base64="@recipe.image"></raw-img>-->
-	<img id='view-image' base64="@recipe.imageUrl"></img>
+	<img id='view-image' src="@recipe.imageUrl"></img>
 
 	<h1>{recipe.name}</h1>
 

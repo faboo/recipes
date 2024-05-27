@@ -45,8 +45,8 @@
     }
   },
   "globalHeaders": {
-    "Access-Control-Allow-Origin": "*",
-    "Content-Security-Policy": "default-src https: 'unsafe-eval' 'unsafe-inline'; object-src 'none'"
+    "access-control-allow-origin": "*",
+    "content-security-policy": "default-src https: 'unsafe-eval' 'unsafe-inline'; object-src 'none'"
   },
   "mimeTypes": {
     ".json": "text/json"
