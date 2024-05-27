@@ -85,6 +85,22 @@ class Recipes:
             return recipe
 
 
+    def getImage(self, id:str) -> bytes|None:
+        name = f'{self.identity.email}/{id}.json' \
+            if self.identity \
+            else f'{id}.json'
+
+        with self.container.get_blob_client(name) as blob:
+            content = blob.download_blob(encoding='utf-8')
+            recipe = json.load(content)
+            if 'image' in recipe:
+                image = recipe['image'].base64.b64decode(recipe['image'])
+            else:
+                image = None
+
+        return image
+
+
     def delete(self, id:str) -> None:
         identity = cast(Identity, self.identity)
         with self.container.get_blob_client(f'{identity.email}/{id}.json') as blob:
@@ -154,11 +170,9 @@ def image(req:func.HttpRequest) -> func.HttpResponse:
 
     logging.info('Getting image for %s', recipeId)
     with Recipes(getIdentity(req)) as store:
-        recipe = store.get(recipeId)
+        image = store.getImage(recipeId)
 
-    logging.info('Image in recipe? %s', 'image' in recipe)
-    if recipe.get('image'):
-        image = base64.b64decode(recipe['image'])
+    if image:
         logging.info('Returning decoded image %s', len(image))
         return func.HttpResponse(image, mimetype="image")
     else:
