@@ -39,7 +39,13 @@ class Recipes:
     def upsert(self, recipe:dict) -> None:
         identity = cast(Identity, self.identity)
         id = recipe['id']
+        existing = {}
         with self.container.get_blob_client(f'{identity.email}/{id}.json') as blob:
+            try:
+                existing = json.loads(blob.download_blob(encoding='utf-8'))
+            except Exception:
+                pass
+            recipe = {**existing, **recipe}
             blob.upload_blob(json.dumps(recipe).encode('utf-8'))
 
 
@@ -104,6 +110,7 @@ def whoami(req:func.HttpRequest) -> func.HttpResponse:
 def upsert(req:func.HttpRequest) -> func.HttpResponse:
     request = req.get_json()
     with Recipes(getIdentity(req)) as store:
+        del request['imageUrl']
         store.upsert(request)
 
     response = {'ok': True}
@@ -116,7 +123,8 @@ def list(req:func.HttpRequest) -> func.HttpResponse:
         recipes = store.list()
 
     for recipe in recipes:
-        recipe['image'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
+        recipe['imageUrl'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
+        del recipe['image']
 
     response = {'ok': True, 'result': recipes}
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
@@ -128,7 +136,8 @@ def get(req:func.HttpRequest) -> func.HttpResponse:
     with Recipes(getIdentity(req)) as store:
         recipe = store.get(request['id'])
     
-    recipe['image'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
+    recipe['imageUrl'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
+    del recipe['image']
     response = {'ok': True, 'result': recipe}
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
 
