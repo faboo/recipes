@@ -8,7 +8,7 @@ export default class UploadImage extends Widget {
 		super()
 
 		this.addProperty('imageObject', '', this.onImageObjectChanged.bind(this))
-		this.addProperty('imageUrl', '', this.onImageObjectChanged.bind(this))
+		this.addProperty('image-url', '')
 		this.addProperty('image', '', this.onImageChanged.bind(this))
 		this.addProperty('hideClear', true)
 		this.addProperty('cleared', false)

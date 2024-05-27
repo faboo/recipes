@@ -228,7 +228,7 @@
 		<button onClick="onSaveClicked">Save</button>
 		<button onClick="onCancelClicked">Cancel</button>
 
-		<upload-image image="@=editRecipe.image" imageUrl="@editRecipe.imageUrl"></upload-image>
+		<upload-image image="@=editRecipe.image" image-url="@editRecipe.imageUrl"></upload-image>
 	</div>
 
 	<div>
@@ -320,7 +320,7 @@
 		<button onClick="onSaveClicked">Save</button>
 		<button onClick="onCancelClicked">Cancel</button>
 
-		<upload-image image="@=editRecipe.image" imageUrl="@editRecipe.imageUrl"></upload-image>
+		<upload-image image="@=editRecipe.image" image-url="@editRecipe.imageUrl"></upload-image>
 	</div>
 
 	<div>
@@ -843,6 +843,7 @@
 		}
 		#upload-image-url {
 			z-index: 1;
+			position: absolute;
 		}
 		#upload-image-local {
 			z-index: 2;
@@ -861,7 +862,7 @@
 			text-shadow: #fff 0 0 3px;
 		}
 	</style>
-	<img id="upload-image-url" src="@imageUrl" hidden='@cleared'></img>
+	<img id="upload-image-url" src="@image-url" hidden='@cleared'></img>
 	<img id="upload-image-local" src="@imageObject">
 	<input
 		type="file"
@@ -884,6 +885,7 @@
 		}
 		#upload-image-url {
 			z-index: 1;
+			position: absolute;
 		}
 		#upload-image-local {
 			z-index: 2;
@@ -902,7 +904,7 @@
 			text-shadow: #fff 0 0 3px;
 		}
 	</style>
-	<img id="upload-image-url" src="@imageUrl" hidden='@cleared'></img>
+	<img id="upload-image-url" src="@image-url" hidden='@cleared'></img>
 	<img id="upload-image-local" src="@imageObject">
 	<input
 		type="file"
