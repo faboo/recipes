@@ -9,6 +9,7 @@ export class Recipe extends Model{
 		this.addProperty('id', 0)
 		this.addProperty('name', 'New Recipe')
 		this.addProperty('image', '')
+		this.addProperty('imageUrl', '')
 		this.addProperty('ingredients', new LiveArray())
 		this.addProperty('instructions', new LiveArray())
 		this.addProperty('tags', new LiveArray())
