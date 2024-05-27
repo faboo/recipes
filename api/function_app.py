@@ -153,11 +153,14 @@ def image(req:func.HttpRequest) -> func.HttpResponse:
     request = req.get_json()
     recipeId = req.route_params.get('id')
 
+    logging.info('Getting image for %s', recipeId)
     with Recipes(getIdentity(req)) as store:
         recipe = store.get(recipeId)
-    
+
+    logging.info('Image in recipe? %s', 'image' in recipe)
     if recipe.get('image'):
         image = base64.b64decode(recipe['image'])
+        logging.info('Returning decoded image %s', len(image))
         return func.HttpResponse(image, mimetype="image")
     else:
         return func.HttpResponse(status_code=404)
