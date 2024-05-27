@@ -8,8 +8,10 @@ export default class UploadImage extends Widget {
 		super()
 
 		this.addProperty('imageObject', '', this.onImageObjectChanged.bind(this))
+		this.addProperty('imageUrl', '', this.onImageObjectChanged.bind(this))
 		this.addProperty('image', '', this.onImageChanged.bind(this))
 		this.addProperty('hideClear', true)
+		this.addProperty('cleared', false)
 	}
 
 	async bind(context, root){
@@ -39,6 +41,7 @@ export default class UploadImage extends Widget {
 
 	onClearClicked(){
 		this.imageObject = ''
+		this.cleared = true
 	}
 
 	async onImageObjectChanged(){

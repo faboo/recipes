@@ -228,8 +228,7 @@
 		<button onClick="onSaveClicked">Save</button>
 		<button onClick="onCancelClicked">Cancel</button>
 
-		<img src="@editRecipe.imageUrl"></img>
-		<upload-image image="@=editRecipe.image"></upload-image>
+		<upload-image image="@=editRecipe.image" imageUrl="@editRecipe.imageUrl"></upload-image>
 	</div>
 
 	<div>
@@ -321,8 +320,7 @@
 		<button onClick="onSaveClicked">Save</button>
 		<button onClick="onCancelClicked">Cancel</button>
 
-		<img src="@editRecipe.imageUrl"></img>
-		<upload-image image="@=editRecipe.image"></upload-image>
+		<upload-image image="@=editRecipe.image" imageUrl="@editRecipe.imageUrl"></upload-image>
 	</div>
 
 	<div>
@@ -841,11 +839,19 @@
 		img {
 			height: 4rem;
 			width: 4rem;
+			position: relative;
+		}
+		#upload-image-url {
+			z-index: 1;
+		}
+		#upload-image-object {
+			z-index: 2;
 		}
 		widgy-button{
 			position: absolute;
 			right: .25rem;
 			bottom: .25rem;
+			z-index: 3;
 		}
 		button{
 			border-style: none;
@@ -855,7 +861,8 @@
 			text-shadow: #fff 0 0 3px;
 		}
 	</style>
-	<img src="@imageObject">
+	<img id="upload-image-url" src="@imageUrl" hidden='@cleared'></img>
+	<img id="upload-image-local" src="@imageObject">
 	<input
 		type="file"
 		accept="image/*">
@@ -873,11 +880,19 @@
 		img {
 			height: 4rem;
 			width: 4rem;
+			position: relative;
+		}
+		#upload-image-url {
+			z-index: 1;
+		}
+		#upload-image-object {
+			z-index: 2;
 		}
 		widgy-button{
 			position: absolute;
 			right: .25rem;
 			bottom: .25rem;
+			z-index: 3;
 		}
 		button{
 			border-style: none;
@@ -887,7 +902,8 @@
 			text-shadow: #fff 0 0 3px;
 		}
 	</style>
-	<img src="@imageObject">
+	<img id="upload-image-url" src="@imageUrl" hidden='@cleared'></img>
+	<img id="upload-image-local" src="@imageObject">
 	<input
 		type="file"
 		accept="image/*">
