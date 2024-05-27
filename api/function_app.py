@@ -1,6 +1,7 @@
 from typing import cast, List
 import logging
 import os
+import uuid
 import json
 import base64
 import dataclasses
@@ -39,17 +40,20 @@ class Recipes:
     def upsert(self, recipe:dict) -> None:
         identity = cast(Identity, self.identity)
         id = recipe['id']
-        existing = {}
         with self.container.get_blob_client(f'{identity.email}/{id}.json') as blob:
             try:
                 existing = json.loads(blob.download_blob(encoding='utf-8'))
             except Exception:
-                pass
+                existing = {}
 
             if 'imageUrl' in recipe:
                 del recipe['imageUrl']
             recipe = {**existing, **recipe}
-            blob.upload_blob(json.dumps(recipe).encode('utf-8'))
+
+            block = json.dumps(recipe).encode('utf-8')
+            blockId = str(uuid.uuid1())
+            blob.stage_block(block_id=blockId, data=block)
+            blob.commit_block_list([blockId])
 
 
     def list(self) -> List[dict]:
