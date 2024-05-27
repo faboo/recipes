@@ -18,7 +18,7 @@ export default class UploadImage extends Widget {
 		await super.bind(context, root)
 
 		this.#input = this.firstElement('input')
-		this.#image = this.firstElement('img')
+		this.#image = this.firstElement('#upload-image-local')
 
 		this.#input.addEventListener('input', this.onInputChange.bind(this))
 		this.#image.addEventListener('click', this.onImageClick.bind(this))
