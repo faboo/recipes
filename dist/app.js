@@ -90,6 +90,7 @@ export default class App extends widgy.Application{
 
 		this.title = 'Recipes'
 		this.identity = null
+		this.api = null
 
 		this.addProperty('selectedPane', 'list')
 		this.addProperty('recipes', new widgy.LiveArray())
@@ -137,14 +138,14 @@ export default class App extends widgy.Application{
 			})
 
 		let recipeDB = this.getDatabase('recipes')
-		let api = new Api()
+		this.api = new Api()
 
-		this.identity = await api.init()
+		this.identity = await this.api.init()
 
 		recipeDB.addRemoteConnectListener(() => this.dropboxConnected = true)
 		recipeDB.addRemoteDisconnectListener(() => this.dropboxConnected = false)
 		//recipeDB.setRemoteStore(new widgy.Dropbox('rnqhasm3j9zrf2n', ''))
-		recipeDB.setRemoteStore(api)
+		recipeDB.setRemoteStore(this.api)
 
 		await recipeDB.syncRemote()
 
