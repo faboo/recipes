@@ -90,7 +90,11 @@ class Recipes:
         with self.container.get_blob_client(name) as blob:
             content = blob.download_blob(encoding='utf-8')
             recipe = json.load(content)
-            recipe['imageUrl'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
+            if chef:
+                recipe['imageUrl'] = \
+                    'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
+            else:
+                recipe['imageUrl'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
             if 'image' in recipe:
                 del recipe['image']
 
@@ -195,7 +199,7 @@ def image(req:func.HttpRequest) -> func.HttpResponse:
 
     logging.info('Getting image for %s', recipeId)
     with Recipes(getIdentity(req)) as store:
-        image = store.getImage(recipeId)
+        image = store.getImage(recipeId, None)
 
     if image:
         logging.info('Returning decoded image %s', len(image))
