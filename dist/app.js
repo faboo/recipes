@@ -92,7 +92,7 @@ export default class App extends widgy.Application{
 		this.identity = null
 		this.api = null
 
-		this.addProperty('selectedPane', 'list')
+		this.addProperty('selectedPane', 'loading')
 		this.addProperty('recipes', new widgy.LiveArray())
 		this.addProperty('selectedRecipe')
 		this.addProperty('busy', true, this.onBusyChanged)
