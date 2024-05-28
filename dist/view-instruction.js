@@ -15,8 +15,9 @@ export default class ViewInstruction extends Widget {
 	}
 
 	getIngredient(name){
-		let name = name.toLowerCase()
 		let text = null
+
+		name = name.toLowerCase()
 
 		// Starts with
 		for(let ingredient of this.recipe.ingredients.values())
