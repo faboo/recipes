@@ -46,7 +46,7 @@
   },
   "globalHeaders": {
     "access-control-allow-origin": "*",
-    "content-security-policy": "default-src https: 'unsafe-eval' 'unsafe-inline'; object-src 'none'; connect-src blob:; img-src data:"
+    "content-security-policy": "default-src https: 'unsafe-eval' 'unsafe-inline'; object-src 'none'; connect-src blob: https:; img-src data: https:"
   },
   "mimeTypes": {
     ".json": "text/json"
