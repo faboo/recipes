@@ -7,6 +7,7 @@ export class Api extends srch.RemoteStore{
 	constructor(){
 		super()
 		this.connected = false
+		this.identity = null
 	}
 
 	async post(url, body){
@@ -41,18 +42,22 @@ export class Api extends srch.RemoteStore{
 
 			if(result.roles.indexOf('chef') >= 0)
 				this.connected = true
+
+			this.identity = result
 		}
 		catch(ex){
 			console.error(ex)
 		}
+
+		return this.identity
 	}
 
 	async upsert(object, objectId, objectName){
 		await this.post('upsert', object)
 	}
 
-	async getById(objectId, objectName){
-		let response = await this.post('get', {'id': objectId})
+	async getById(objectId, objectName, chef){
+		let response = await this.post('get', {'id': objectId, 'chef': chef})
 
 		return response['result']
 	}
@@ -84,6 +89,7 @@ export default class App extends widgy.Application{
 		super()
 
 		this.title = 'Recipes'
+		this.identity = null
 
 		this.addProperty('selectedPane', 'list')
 		this.addProperty('recipes', new widgy.LiveArray())
@@ -133,7 +139,7 @@ export default class App extends widgy.Application{
 		let recipeDB = this.getDatabase('recipes')
 		let api = new Api()
 
-		await api.init()
+		this.identity = await api.init()
 
 		recipeDB.addRemoteConnectListener(() => this.dropboxConnected = true)
 		recipeDB.addRemoteDisconnectListener(() => this.dropboxConnected = false)
@@ -167,12 +173,17 @@ export default class App extends widgy.Application{
 		this.busy = false
 	}
 
-	getRecipeById(recipeId){
+	getRecipeById(recipeId, chef){
 		let found = null
 
-		for(let recipe of this.recipes.values()){
-			if(recipe.id == recipeId){
-				found = recipe
+		if(chef){
+			found = self.api.getById(recipeId, null, chef)
+		}
+		else{
+			for(let recipe of this.recipes.values()){
+				if(recipe.id == recipeId){
+					found = recipe
+				}
 			}
 		}
 
@@ -222,7 +233,7 @@ export default class App extends widgy.Application{
 			this.selectedRecipe = new Recipe(recipeJson)
 		}
 		else{
-			this.selectedRecipe = this.getRecipeById(options.recipeId)
+			this.selectedRecipe = this.getRecipeById(options.recipeId, options.chef)
 
 		}
 

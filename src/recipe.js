@@ -13,6 +13,7 @@ export class Recipe extends Model{
 		this.addProperty('ingredients', new LiveArray())
 		this.addProperty('instructions', new LiveArray())
 		this.addProperty('tags', new LiveArray())
+		this.addProperty('public', false)
 
 		if(template)
 			this.loadFromTemplate(template)

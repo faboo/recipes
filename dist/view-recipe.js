@@ -21,6 +21,7 @@ export default class ViewRecipe extends Widget {
 	}
 
 	onShareClicked(){
+		/*
 		this.application.busy = true
 
 		let recipe = this.recipe.toPOJO()
@@ -39,5 +40,11 @@ export default class ViewRecipe extends Widget {
 		navigator.clipboard.writeText(shareUrl)
 
 		this.application.busy = false
+		*/
+		if(window.currentApplication.identity)
+			navigator.clipboard.writeText(
+				location.origin+'/#view/recipeId='
+				+this.recipe.id
+				+'&chef='+window.currentApplication.identity.email)
 	}
 }

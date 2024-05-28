@@ -36,6 +36,10 @@ class Recipes:
             'recipe',
             os.getenv('blob_key'))
 
+    @property
+    def chef(self) -> str|None:
+        return self.identity.email if self.identity else None
+
 
     def upsert(self, recipe:dict) -> None:
         identity = cast(Identity, self.identity)
@@ -75,9 +79,12 @@ class Recipes:
         return recipes
 
 
-    def get(self, id:str) -> dict:
-        name = f'{self.identity.email}/{id}.json' \
-            if self.identity \
+    def get(self, id:str, chef:str|None) -> dict:
+        if chef is None:
+            chef = self.chef
+
+        name = f'{chef}/{id}.json' \
+            if chef \
             else f'{id}.json'
 
         with self.container.get_blob_client(name) as blob:
@@ -86,12 +93,19 @@ class Recipes:
             recipe['imageUrl'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
             if 'image' in recipe:
                 del recipe['image']
+
+            if chef != self.chef and not recipe.get('public'):
+                raise Exception('Not found')
+            
             return recipe
 
 
-    def getImage(self, id:str) -> bytes|None:
-        name = f'{self.identity.email}/{id}.json' \
-            if self.identity \
+    def getImage(self, id:str, chef:str|None) -> bytes|None:
+        if chef is None:
+            chef = self.chef
+
+        name = f'{chef}/{id}.json' \
+            if chef \
             else f'{id}.json'
 
         with self.container.get_blob_client(name) as blob:
@@ -100,6 +114,9 @@ class Recipes:
             if 'image' in recipe:
                 image = base64.b64decode(recipe['image'])
             else:
+                image = None
+
+            if chef != self.chef and not recipe.get('public'):
                 image = None
 
         return image
@@ -166,7 +183,7 @@ def list(req:func.HttpRequest) -> func.HttpResponse:
 def get(req:func.HttpRequest) -> func.HttpResponse:
     request = req.get_json()
     with Recipes(getIdentity(req)) as store:
-        recipe = store.get(request['id'])
+        recipe = store.get(request['id'], request.get('chef'))
     
     response = {'ok': True, 'result': recipe}
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
@@ -179,6 +196,22 @@ def image(req:func.HttpRequest) -> func.HttpResponse:
     logging.info('Getting image for %s', recipeId)
     with Recipes(getIdentity(req)) as store:
         image = store.getImage(recipeId)
+
+    if image:
+        logging.info('Returning decoded image %s', len(image))
+        return func.HttpResponse(image, mimetype="image")
+    else:
+        return func.HttpResponse(status_code=404)
+
+
+@app.route(route='image/{chef}/{id}')
+def publicImage(req:func.HttpRequest) -> func.HttpResponse:
+    recipeId = req.route_params.get('id')
+    chef = req.route_params.get('chef')
+
+    logging.info('Getting image for %s', recipeId)
+    with Recipes(getIdentity(req)) as store:
+        image = store.getImage(recipeId, chef)
 
     if image:
         logging.info('Returning decoded image %s', len(image))

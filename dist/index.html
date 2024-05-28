@@ -189,6 +189,10 @@
 			vertical-align: middle;
 		}
 
+		img.share {
+			width: .7em;
+		}
+
 		fieldset {
 			margin-top: 1rem;
 		}
@@ -227,6 +231,7 @@
 
 		<button onClick="onSaveClicked">Save</button>
 		<button onClick="onCancelClicked">Cancel</button>
+		<checkbox checked="@=editRecipe.public">Public</checkbox>
 
 		<upload-image image="@=editRecipe.image" image-url="@editRecipe.imageUrl"></upload-image>
 	</div>
@@ -281,6 +286,10 @@
 			vertical-align: middle;
 		}
 
+		img.share {
+			width: .7em;
+		}
+
 		fieldset {
 			margin-top: 1rem;
 		}
@@ -319,6 +328,7 @@
 
 		<button onClick="onSaveClicked">Save</button>
 		<button onClick="onCancelClicked">Cancel</button>
+		<checkbox checked="@=editRecipe.public">Public</checkbox>
 
 		<upload-image image="@=editRecipe.image" image-url="@editRecipe.imageUrl"></upload-image>
 	</div>
