@@ -10,27 +10,26 @@ export default class ViewInstruction extends Widget {
 		this.addProperty('instructionHtml', '')
 	}
 
-	wrapIngredient(ingredient){
+	wrapIngredient(ingredient, name){
 		return '<span class="amount">'+ingredient.amount.toString()+' '+ingredient.unit+'</span> '+name
 	}
 
 	getIngredient(name){
 		let text = null
-
-		name = name.toLowerCase()
+		let lowerName = name.toLowerCase()
 
 		// Starts with
 		for(let ingredient of this.recipe.ingredients.values())
-			if(ingredient.what.toLowerCase().startsWith(name)){
-				text = this.wrapIngredient(ingredient)
+			if(ingredient.what.toLowerCase().startsWith(lowerName)){
+				text = this.wrapIngredient(ingredient, name)
 				break
 			}
 
 		// ... or contained in
 		if(text == null)
 			for(let ingredient of this.recipe.ingredients.values())
-				if(ingredient.what.toLowerCase().indexOf(name) >= 0){
-					text = this.wrapIngredient(ingredient)
+				if(ingredient.what.toLowerCase().indexOf(lowerName) >= 0){
+					text = this.wrapIngredient(ingredient, name)
 					break
 				}
 
