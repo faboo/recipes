@@ -178,7 +178,7 @@ export default class App extends widgy.Application{
 		let found = null
 
 		if(chef){
-			found = await this.api.getById(recipeId, null, chef)
+			found = new Recipe(await this.api.getById(recipeId, null, chef))
 		}
 		else{
 			for(let recipe of this.recipes.values()){
