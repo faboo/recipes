@@ -174,11 +174,11 @@ export default class App extends widgy.Application{
 		this.busy = false
 	}
 
-	getRecipeById(recipeId, chef){
+	async getRecipeById(recipeId, chef){
 		let found = null
 
 		if(chef){
-			found = this.api.getById(recipeId, null, chef)
+			found = await this.api.getById(recipeId, null, chef)
 		}
 		else{
 			for(let recipe of this.recipes.values()){
@@ -208,8 +208,8 @@ export default class App extends widgy.Application{
 		this.setLocation('new', { })
 	}
 
-	onPathEdit(options){
-		this.selectedRecipe = this.getRecipeById(options.recipeId)
+	async onPathEdit(options){
+		this.selectedRecipe = await this.getRecipeById(options.recipeId)
 
 		if(this.selectedRecipe)
 			this.selectedPane = 'edit'
@@ -227,14 +227,14 @@ export default class App extends widgy.Application{
 			})
 	}
 
-	onPathView(options){
+	async onPathView(options){
 		if(options.recipeJSON){
 			let recipeJson = JSON.parse(options.recipeJSON)
 
 			this.selectedRecipe = new Recipe(recipeJson)
 		}
 		else{
-			this.selectedRecipe = this.getRecipeById(options.recipeId, options.chef)
+			this.selectedRecipe = await this.getRecipeById(options.recipeId, options.chef)
 
 		}
 
