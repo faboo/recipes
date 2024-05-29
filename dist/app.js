@@ -62,6 +62,22 @@ export class Api extends srch.RemoteStore{
 		return response['result']
 	}
 
+	async listByChef(chef){
+		let response = await this.post('list', {'chef': chef})
+		let objects = []
+
+		for(let entry of response.result){
+			objects.push(
+				{ id: entry.id
+				, modified: new Date(entry.modified_time)
+				, size: Object.keys(entry).length
+				, content: entry
+				})
+		}
+
+		return objects
+	}
+
 	async removeById(objectId, objectName){
 		await this.post('delete', {'id': objectId})
 	}
@@ -90,13 +106,14 @@ export default class App extends widgy.Application{
 
 		this.title = 'Recipes'
 		this.identity = null
+		this.otherChef = null
 		this.api = null
 
 		this.addProperty('selectedPane', 'loading')
 		this.addProperty('recipes', new widgy.LiveArray())
 		this.addProperty('selectedRecipe')
 		this.addProperty('busy', true, this.onBusyChanged)
-		this.addProperty('dropboxConnected', false)
+		//this.addProperty('dropboxConnected', false)
 
 		this.addPath('', this.onPathList.bind(this), {})
 		this.addPath('edit', this.onPathEdit.bind(this), {recipeId: Number})
@@ -142,8 +159,8 @@ export default class App extends widgy.Application{
 
 		this.identity = await this.api.init()
 
-		recipeDB.addRemoteConnectListener(() => this.dropboxConnected = true)
-		recipeDB.addRemoteDisconnectListener(() => this.dropboxConnected = false)
+		//recipeDB.addRemoteConnectListener(() => this.dropboxConnected = true)
+		//recipeDB.addRemoteDisconnectListener(() => this.dropboxConnected = false)
 		//recipeDB.setRemoteStore(new widgy.Dropbox('rnqhasm3j9zrf2n', ''))
 		recipeDB.setRemoteStore(this.api)
 
@@ -228,15 +245,10 @@ export default class App extends widgy.Application{
 	}
 
 	async onPathView(options){
-		if(options.recipeJSON){
-			let recipeJson = JSON.parse(options.recipeJSON)
+		if(options.chef)
+			this.otherChef = options.chef
 
-			this.selectedRecipe = new Recipe(recipeJson)
-		}
-		else{
-			this.selectedRecipe = await this.getRecipeById(options.recipeId, options.chef)
-
-		}
+		this.selectedRecipe = await this.getRecipeById(options.recipeId, options.chef)
 
 		if(this.selectedRecipe)
 			this.selectedPane = 'view'
@@ -321,11 +333,20 @@ export default class App extends widgy.Application{
 	}
 
 	onCancelled(){
+		options = { }
+
+		if(this.otherChef)
+			options.chef = this.otherChef
+
 		this.selectedPane = 'list'
 		this.selectedRecipe = null
-		this.setLocation('', { })
+		this.setLocation('', options)
 
 		this.syncRemoteDatabase()
+	}
+
+	onLoginClicked(){
+		window.location = '/login'
 	}
 
 	onDropboxConnect(){

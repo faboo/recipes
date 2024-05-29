@@ -17,16 +17,13 @@
 			align-content: space-around;
 		}
 
-		#new-recipe {
+		.buttons > * {
 			align-self: center;
 		}
-		#new-recipe button {
+		.buttons > * button {
 			padding: 1ex;
 		}
 
-		#dropbox-connect {
-			align-self: center;
-		}
 		#dropbox-connect button {
 			background: #0062ff;
 			color: #eee;
@@ -80,8 +77,11 @@
 	<header>
 		<h1>Recipes</h1>
 		<div class="buttons">
-			<a href="/login">Login</a>
+			<!--<a href="/login">Login</a>-->
+			<button onClick="onLoginClicked" hidden="@application.identity">Login</button>
+			<!--
 			<button id="dropbox-connect" onClick="onDropboxConnect" disabled="@application.dropboxConnected"></button>
+			-->
 			<button id="new-recipe" onClick="onNewClicked">New Recipe</button>
 		</div>
 	</header>

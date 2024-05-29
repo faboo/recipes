@@ -60,17 +60,24 @@ class Recipes:
             blob.commit_block_list([blockId])
 
 
-    def list(self) -> List[dict]:
-        identity = cast(Identity, self.identity)
-        blobs = self.container.list_blobs(name_starts_with=f'{identity.email}/')
+    def list(self, chef:str|None) -> List[dict]:
+        chef = self.chef if chef is None else chef
+        blobs = self.container.list_blobs(name_starts_with=f'{chef}/')
         recipes:List[dict] = []
+
+        if chef is None:
+            raise Exception('No chef')
 
         for blobProps in blobs:
             with self.container.get_blob_client(blob=blobProps.name) as blob:
                 content = blob.download_blob(encoding='utf-8')
                 recipe = json.load(content)
 
-                recipe['imageUrl'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
+                if self.chef != chef and not recipe.get('public'):
+                    continue
+
+                recipe['imageUrl'] =
+                    'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
                 if 'image' in recipe:
                     del recipe['image']
 
@@ -83,23 +90,23 @@ class Recipes:
         if chef is None:
             chef = self.chef
 
-        name = f'{chef}/{id}.json' \
-            if chef \
-            else f'{id}.json'
+        if chef is None:
+            raise Exception('No chef')
+
+        name = f'{chef}/{id}.json'
 
         with self.container.get_blob_client(name) as blob:
             content = blob.download_blob(encoding='utf-8')
             recipe = json.load(content)
-            if chef:
-                recipe['imageUrl'] = \
-                    'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
-            else:
-                recipe['imageUrl'] = 'https://recipes.halfpanda.dev/api/image/'+recipe['id']
-            if 'image' in recipe:
-                del recipe['image']
 
             if chef != self.chef and not recipe.get('public'):
                 raise Exception('Not found')
+
+            recipe['imageUrl'] = \
+                'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
+
+            if 'image' in recipe:
+                del recipe['image']
             
             return recipe
 
@@ -108,19 +115,18 @@ class Recipes:
         if chef is None:
             chef = self.chef
 
-        name = f'{chef}/{id}.json' \
-            if chef \
-            else f'{id}.json'
+        name = f'{chef}/{id}.json'
 
         with self.container.get_blob_client(name) as blob:
             content = blob.download_blob(encoding='utf-8')
             recipe = json.load(content)
-            if 'image' in recipe:
-                image = base64.b64decode(recipe['image'])
-            else:
-                image = None
 
             if chef != self.chef and not recipe.get('public'):
+                image = None
+
+            if recipe.get('image'):
+                image = base64.b64decode(recipe['image'])
+            else:
                 image = None
 
         return image

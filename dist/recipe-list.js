@@ -10,7 +10,8 @@ export default class RecipeList extends Widget {
 		this.addEventSlot('deleteClicked')
 		this.addEventSlot('searchClicked')
 		this.addEventSlot('clearClicked')
-		this.addEventSlot('dropboxConnect')
+		this.addEventSlot('loginClicked')
+		//this.addEventSlot('dropboxConnect')
 
 		this.addProperty('recipes')
 
@@ -43,7 +44,11 @@ export default class RecipeList extends Widget {
 		this.triggerEvent('clearClicked')
 	}
 
-	onDropboxConnect(){
-		this.triggerEvent('dropboxConnect')
+	onLoginClicked(){
+		this.triggerEvent('loginClicked')
 	}
+
+	/*onDropboxConnect(){
+		this.triggerEvent('dropboxConnect')
+	}*/
 }

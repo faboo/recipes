@@ -9,10 +9,6 @@
       "allowedRoles": ["chef"]
     },
     {
-      "route": "/api/list",
-      "allowedRoles": ["chef"]
-    },
-    {
       "route": "/api/delete",
       "allowedRoles": ["chef"]
     },
