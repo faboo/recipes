@@ -76,7 +76,7 @@ class Recipes:
                 if self.chef != chef and not recipe.get('public'):
                     continue
 
-                recipe['imageUrl'] =
+                recipe['imageUrl'] = \
                     'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
                 if 'image' in recipe:
                     del recipe['image']
@@ -150,7 +150,7 @@ class Recipes:
         self.container.close()
 
 
-@app.route(route='api/whoami')
+@app.route(route='whoami')
 def whoami(req:func.HttpRequest) -> func.HttpResponse:
     response:dict
     try:
