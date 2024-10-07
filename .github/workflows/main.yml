@@ -19,10 +19,10 @@ jobs:
         with:
           submodules: true
       # Do this later
-      #- name: Build
-      #  env:
-      #    BRANCH: main
-      #  run: sh -e build.sh
+      - name: Build
+        env:
+          BRANCH: main
+        run: cp staticwebapp.config.json dist
           
       - name: Deploy
         id: builddeploy
