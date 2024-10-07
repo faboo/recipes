@@ -14,11 +14,7 @@
       "route": "/api/list"
     },
     {
-      "route": "/api/image/*/*"
-    },
-    {
-      "route": "/api/image/*",
-      "allowedRoles": ["chef"]
+      "route": "/api/image/*"
     },
     {
       "route": "/api/upsert",
