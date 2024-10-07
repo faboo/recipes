@@ -5,6 +5,22 @@
   },
   "routes": [
     {
+      "route": "/api/whoami"
+    },
+    {
+      "route": "/api/get"
+    },
+    {
+      "route": "/api/list"
+    },
+    {
+      "route": "/api/image/*/*"
+    },
+    {
+      "route": "/api/image/*",
+      "allowedRoles": ["chef"]
+    },
+    {
       "route": "/api/upsert",
       "allowedRoles": ["chef"]
     },
