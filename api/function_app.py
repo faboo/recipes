@@ -150,7 +150,7 @@ class Recipes:
         self.container.close()
 
 
-@app.route(route='whoami')
+@app.route(route='api/whoami')
 def whoami(req:func.HttpRequest) -> func.HttpResponse:
     response:dict
     try:
