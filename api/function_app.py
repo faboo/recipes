@@ -199,7 +199,7 @@ def get(req:func.HttpRequest) -> func.HttpResponse:
         response = {'ok': True, 'result': recipe}
     except Exception as ex:
         logging.exception('Error getting recipe')
-        response = {'ok': False, f'Error: {ex}'}
+        response = {'ok': False, 'error': f'Error: {ex}'}
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
 
 
