@@ -5,6 +5,21 @@
   },
   "routes": [
     {
+      "route": "/api/whoami",
+      "methods": [
+      	"post"
+      ]
+    },
+    {
+      "route": "/api/get"
+    },
+    {
+      "route": "/api/list"
+    },
+    {
+      "route": "/api/image/*"
+    },
+    {
       "route": "/api/upsert",
       "allowedRoles": ["chef"]
     },
