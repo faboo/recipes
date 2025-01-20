@@ -333,7 +333,7 @@ export default class App extends widgy.Application{
 	}
 
 	onCancelled(){
-		options = { }
+		let options = { }
 
 		if(this.otherChef)
 			options.chef = this.otherChef

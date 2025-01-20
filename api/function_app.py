@@ -153,6 +153,7 @@ class Recipes:
 @app.route(route='whoami')
 def whoami(req:func.HttpRequest) -> func.HttpResponse:
     response:dict
+    code = 200
     try:
         identity = getIdentity(req)
 
@@ -162,12 +163,17 @@ def whoami(req:func.HttpRequest) -> func.HttpResponse:
             }
     except Exception as ex:
         response = {'ok': False, 'result': str(ex) }
+        code = 500
 
-    return func.HttpResponse(json.dumps(response), mimetype="application/json")
+    return func.HttpResponse(
+        json.dumps(response),
+        status_code=code,
+        mimetype="application/json")
 
 
 @app.route(route='upsert')
 def upsert(req:func.HttpRequest) -> func.HttpResponse:
+    code = 200
     try:
         request = req.get_json()
         with Recipes(getIdentity(req)) as store:
@@ -176,8 +182,12 @@ def upsert(req:func.HttpRequest) -> func.HttpResponse:
         response = {'ok': True}
     except Exception as ex:
         response = {'ok': False, 'result': str(ex) }
+        code = 500
 
-    return func.HttpResponse(json.dumps(response), mimetype="application/json")
+    return func.HttpResponse(
+        json.dumps(response),
+        status_code=code,
+        mimetype="application/json")
 
 
 @app.route(route='list')
@@ -192,6 +202,7 @@ def list(req:func.HttpRequest) -> func.HttpResponse:
 @app.route(route='get')
 def get(req:func.HttpRequest) -> func.HttpResponse:
     request = req.get_json()
+    code = 200
     try:
         with Recipes(getIdentity(req)) as store:
             recipe = store.get(request['id'], request.get('chef'))
@@ -199,8 +210,12 @@ def get(req:func.HttpRequest) -> func.HttpResponse:
         response = {'ok': True, 'result': recipe}
     except Exception as ex:
         logging.exception('Error getting recipe')
-        response = {'ok': False, 'error': f'Error: {ex}'}
-    return func.HttpResponse(json.dumps(response), mimetype="application/json")
+        response = {'ok': False, 'result': str(ex)}
+        code = 500
+    return func.HttpResponse(
+        json.dumps(response),
+        status_code=code,
+        mimetype="application/json")
 
 
 @app.route(route='image/{id}')
