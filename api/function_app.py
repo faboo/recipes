@@ -192,10 +192,14 @@ def list(req:func.HttpRequest) -> func.HttpResponse:
 @app.route(route='get')
 def get(req:func.HttpRequest) -> func.HttpResponse:
     request = req.get_json()
-    with Recipes(getIdentity(req)) as store:
-        recipe = store.get(request['id'], request.get('chef'))
-    
-    response = {'ok': True, 'result': recipe}
+    try:
+        with Recipes(getIdentity(req)) as store:
+            recipe = store.get(request['id'], request.get('chef'))
+        
+        response = {'ok': True, 'result': recipe}
+    except Exception as ex:
+        logging.exception('Error getting recipe')
+        response = {'ok': False, f'Error: {ex}'}
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
 
 
