@@ -192,10 +192,18 @@ def upsert(req:func.HttpRequest) -> func.HttpResponse:
 
 @app.route(route='list')
 def list(req:func.HttpRequest) -> func.HttpResponse:
-    with Recipes(getIdentity(req)) as store:
-        recipes = store.list()
+    code = 200
+    try:
+        with Recipes(getIdentity(req)) as store:
+            recipes = store.list()
 
-    response = {'ok': True, 'result': recipes}
+        response = {'ok': True, 'result': recipes}
+    except Exception as ex:
+        logging.exception('Error listing recipes')
+        response = {'ok': False, 'result': str(ex)}
+        code = 500
+
+
     return func.HttpResponse(json.dumps(response), mimetype="application/json")
 
 
