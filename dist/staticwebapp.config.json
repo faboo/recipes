@@ -5,18 +5,6 @@
   },
   "routes": [
     {
-      "route": "/api/whoami"
-    },
-    {
-      "route": "/api/get"
-    },
-    {
-      "route": "/api/list"
-    },
-    {
-      "route": "/api/image/*"
-    },
-    {
       "route": "/api/upsert",
       "allowedRoles": ["chef"]
     },
