@@ -5,7 +5,10 @@
   },
   "routes": [
     {
-      "route": "/api/whoami"
+      "route": "/api/whoami",
+      "methods": [
+        "post"
+      ]
     },
     {
       "route": "/api/get"
@@ -18,11 +21,15 @@
     },
     {
       "route": "/api/upsert",
-      "allowedRoles": ["chef"]
+      "allowedRoles": [
+        "chef"
+      ]
     },
     {
       "route": "/api/delete",
-      "allowedRoles": ["chef"]
+      "allowedRoles": [
+        "chef"
+      ]
     },
     {
       "route": "/login",
@@ -32,10 +39,13 @@
       "route": "/logout",
       "redirect": "/.auth/logout"
     }
-	],
+  ],
   "navigationFallback": {
     "rewrite": "index.html",
-    "exclude": ["/images/*.{png,jpg,gif}", "/css/*"]
+    "exclude": [
+      "/images/*.{png,jpg,gif}",
+      "/css/*"
+    ]
   },
   "responseOverrides": {
     "400": {
