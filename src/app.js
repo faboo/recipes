@@ -68,7 +68,7 @@ export class Api extends srch.RemoteStore{
 	}
 
 	async getById(objectId, objectName, chef){
-		let response = await this.post('get', {'id': objectId, 'chef': chef})
+		let response = await this.post('get', {'id': objectId, 'chef': chef || this.otherChef})
 
 		return response['result']
 	}
@@ -175,6 +175,7 @@ export default class App extends widgy.Application{
 
 		recipeDB.setRemoteStore(this.api)
 		await this.syncRemoteDatabase()
+		this.busy = false
 	}
 
 	// TODO: refresh the loaded recipes
