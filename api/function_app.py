@@ -16,7 +16,7 @@ class Identity:
     roles:List[str]
 
 
-def getIdentity(req:func.HttpRequest) -> Identity|None:
+def getIdentity(req:func.HttpRequest, raiseErrors:bool=False) -> Identity|None:
     identity:Identity|None = None
     try:
         claimsBytes = base64.b64decode(req.headers['X-MS-CLIENT-PRINCIPAL'])
@@ -24,6 +24,8 @@ def getIdentity(req:func.HttpRequest) -> Identity|None:
         identity = Identity(email=claims['userDetails'], roles=claims['userRoles'])
     except Exception:
         logging.exception('No ID found, assuming anonymous')
+        if raiseErrors:
+            raise
 
     return identity
 
@@ -155,7 +157,7 @@ def whoami(req:func.HttpRequest) -> func.HttpResponse:
     response:dict
     code = 200
     try:
-        identity = getIdentity(req)
+        identity = getIdentity(req, True)
 
         response = \
             { 'ok': True
