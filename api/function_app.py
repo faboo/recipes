@@ -70,6 +70,8 @@ class Recipes:
         if chef is None:
             raise Exception('No chef')
 
+        logging.info('Chef: %s', chef)
+
         for blobProps in blobs:
             with self.container.get_blob_client(blob=blobProps.name) as blob:
                 content = blob.download_blob(encoding='utf-8')
@@ -196,8 +198,9 @@ def upsert(req:func.HttpRequest) -> func.HttpResponse:
 def list(req:func.HttpRequest) -> func.HttpResponse:
     code = 200
     try:
+        options = req.get_json() or { }
         with Recipes(getIdentity(req)) as store:
-            recipes = store.list()
+            recipes = store.list(options.get('chef'))
 
         response = {'ok': True, 'result': recipes}
     except Exception as ex:

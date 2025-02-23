@@ -4,9 +4,11 @@ import * as srch from './widgy/storage.js'
 import {Recipe} from './recipe.js'
 
 export class Api extends srch.RemoteStore{
+	#connected
+
 	constructor(chef){
 		super()
-		this.connected = false
+		this.#connected = false
 		this.identity = null
 		this.otherChef = chef
 	}
@@ -38,13 +40,17 @@ export class Api extends srch.RemoteStore{
 		return response
 	}
 
+	get connected(){
+		return this.#connected || this.otherChef
+	}
+
 	async init(){
 		try{
 			let response = await this.post('whoami')
 			let result = response.result || { roles: [] }
 
 			if(result.roles.indexOf('chef') >= 0)
-				this.connected = true
+				this.#connected = true
 
 			this.identity = result
 		}
@@ -68,7 +74,7 @@ export class Api extends srch.RemoteStore{
 	}
 
 	async listByChef(){
-		let response = await this.post('list', {'chef': this.chef})
+		let response = await this.post('list', {'chef': this.otherChef})
 		let objects = []
 
 		for(let entry of response.result){
@@ -121,6 +127,7 @@ export default class App extends widgy.Application{
 		this.addProperty('recipes', new widgy.LiveArray())
 		this.addProperty('selectedRecipe')
 		this.addProperty('busy', true, this.onBusyChanged)
+		this.addProperty('loggedIn', false)
 
 		this.addPath('', this.onPathList.bind(this), {})
 		this.addPath('edit', this.onPathEdit.bind(this), {recipeId: Number})
@@ -167,12 +174,7 @@ export default class App extends widgy.Application{
 		this.identity = await this.api.init()
 
 		recipeDB.setRemoteStore(this.api)
-
-		await recipeDB.syncRemote()
-
-		for(let recipe of await recipeDB.getAll(Recipe))
-			this.recipes.push(new Recipe(recipe))
-		this.busy = false
+		await this.syncRemoteDatabase()
 	}
 
 	// TODO: refresh the loaded recipes
@@ -185,6 +187,11 @@ export default class App extends widgy.Application{
 
 		try{
 			await recipeDB.syncRemote()
+
+			if(this.recipes.length == 0){
+				for(let recipe of await recipeDB.getAll(Recipe))
+					this.recipes.push(new Recipe(recipe))
+			}
 		}
 		catch(ex){
 			console.error(ex)
@@ -210,10 +217,12 @@ export default class App extends widgy.Application{
 		return found
 	}
 
-	onPathList(options){
+	async onPathList(options){
 		this.api.otherChef = options.chef
 		this.selectedRecipe = null
 		this.selectedPane = 'list'
+
+		await this.syncRemoteDatabase()
 	}
 
 	onPathNew(options){
@@ -350,12 +359,6 @@ export default class App extends widgy.Application{
 
 	onLoginClicked(){
 		window.location = '/login'
-	}
-
-	onDropboxConnect(){
-		let recipeDB = this.getDatabase('recipes')
-
-		recipeDB.connectRemote()
 	}
 
 	onBusyChanged(){
