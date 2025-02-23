@@ -623,8 +623,8 @@
 		}
 
 		.buttons {
-			flex-grow: 1;
 			display: flex;
+			flex-direction: column;
 			flex-wrap: wrap-reverse;
 			justify-content: space-between;
 			align-content: space-around;
@@ -637,23 +637,11 @@
 			padding: 1ex;
 		}
 
-		#dropbox-connect button {
-			background: #0062ff;
-			color: #eee;
-			border-radius: .5ex;
-			border-width: 2px;
-			border-color: #7badfe;
-			padding: 3px;
-		}
-		#dropbox-connect button::after {
-			content: "Connect Dropbox"
-		}
-		#dropbox-connect button:disabled {
-			background: #7ea8ea;
-			/* color: #b7b7b7;*/
-		}
-		#dropbox-connect button:disabled::after {
-			content: "Dropbox Connected"
+		#login button {
+			border: none;
+			background: none;
+			color: blue;
+			text-decoration: underline;
 		}
 
 		.search {
@@ -688,10 +676,9 @@
 	</style>
 
 	<header>
-		<h1>Recipes</h1>
+		<h1>Recipe Box</h1>
 		<div class="buttons">
-			<!--<a href="/login">Login</a>-->
-			<button onClick="onLoginClicked" hidden="@application.api.connected">Login</button>
+			<button id="login" onClick="onLoginClicked" hidden="@application.api.connected">Login</button>
 			<!--
 			<button id="dropbox-connect" onClick="onDropboxConnect" disabled="@application.dropboxConnected"></button>
 			-->
@@ -736,8 +723,8 @@
 		}
 
 		.buttons {
-			flex-grow: 1;
 			display: flex;
+			flex-direction: column;
 			flex-wrap: wrap-reverse;
 			justify-content: space-between;
 			align-content: space-around;
@@ -750,23 +737,11 @@
 			padding: 1ex;
 		}
 
-		#dropbox-connect button {
-			background: #0062ff;
-			color: #eee;
-			border-radius: .5ex;
-			border-width: 2px;
-			border-color: #7badfe;
-			padding: 3px;
-		}
-		#dropbox-connect button::after {
-			content: "Connect Dropbox"
-		}
-		#dropbox-connect button:disabled {
-			background: #7ea8ea;
-			/* color: #b7b7b7;*/
-		}
-		#dropbox-connect button:disabled::after {
-			content: "Dropbox Connected"
+		#login button {
+			border: none;
+			background: none;
+			color: blue;
+			text-decoration: underline;
 		}
 
 		.search {
@@ -801,10 +776,9 @@
 	</style>
 
 	<header>
-		<h1>Recipes</h1>
+		<h1>Recipe Box</h1>
 		<div class="buttons">
-			<!--<a href="/login">Login</a>-->
-			<button onClick="onLoginClicked" hidden="@application.api.connected">Login</button>
+			<button id="login" onClick="onLoginClicked" hidden="@application.api.connected">Login</button>
 			<!--
 			<button id="dropbox-connect" onClick="onDropboxConnect" disabled="@application.dropboxConnected"></button>
 			-->

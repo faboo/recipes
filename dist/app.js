@@ -4,14 +4,17 @@ import * as srch from './widgy/storage.js'
 import {Recipe} from './recipe.js'
 
 export class Api extends srch.RemoteStore{
-	constructor(){
+	constructor(chef){
 		super()
 		this.connected = false
 		this.identity = null
+		this.otherChef = chef
 	}
 
 	async post(url, body){
-		let endpoint = 'recipes.halfpanda.dev/api/'
+		let endpoint = location.host == 'localhost:4280'
+			? 'http://localhost:7071/api/'
+			: 'https://recipes.halfpanda.dev/api/'
 		let bodyStr = JSON.stringify(body)
 		let headers =
 			{ 'Content-Type': 'application/json'
@@ -19,7 +22,7 @@ export class Api extends srch.RemoteStore{
 		let response
 
 		response = await fetch(
-			'https://'+endpoint + url,
+			endpoint + url,
 			{ method: 'POST'
 			, body: bodyStr
 			, headers: headers
@@ -47,6 +50,8 @@ export class Api extends srch.RemoteStore{
 		}
 		catch(ex){
 			console.error(ex)
+			console.warn('Getting chef identity failed')
+			this.identity = { roles: [] }
 		}
 
 		return this.identity
@@ -62,8 +67,8 @@ export class Api extends srch.RemoteStore{
 		return response['result']
 	}
 
-	async listByChef(chef){
-		let response = await this.post('list', {'chef': chef})
+	async listByChef(){
+		let response = await this.post('list', {'chef': this.chef})
 		let objects = []
 
 		for(let entry of response.result){
@@ -83,6 +88,9 @@ export class Api extends srch.RemoteStore{
 	}
 
 	async getAll(objectName){
+		if(this.otherChef)
+			return this.listByChef()
+
 		let response = await this.post('list')
 		let objects = []
 
@@ -104,7 +112,7 @@ export default class App extends widgy.Application{
 	constructor(){
 		super()
 
-		this.title = 'Recipes'
+		this.title = 'Recipe Box'
 		this.identity = null
 		this.otherChef = null
 		this.api = null
@@ -113,7 +121,6 @@ export default class App extends widgy.Application{
 		this.addProperty('recipes', new widgy.LiveArray())
 		this.addProperty('selectedRecipe')
 		this.addProperty('busy', true, this.onBusyChanged)
-		//this.addProperty('dropboxConnected', false)
 
 		this.addPath('', this.onPathList.bind(this), {})
 		this.addPath('edit', this.onPathEdit.bind(this), {recipeId: Number})
@@ -159,14 +166,9 @@ export default class App extends widgy.Application{
 
 		this.identity = await this.api.init()
 
-		//recipeDB.addRemoteConnectListener(() => this.dropboxConnected = true)
-		//recipeDB.addRemoteDisconnectListener(() => this.dropboxConnected = false)
-		//recipeDB.setRemoteStore(new widgy.Dropbox('rnqhasm3j9zrf2n', ''))
 		recipeDB.setRemoteStore(this.api)
 
 		await recipeDB.syncRemote()
-
-		//this.dropboxConnected = recipeDB.remoteConnected
 
 		for(let recipe of await recipeDB.getAll(Recipe))
 			this.recipes.push(new Recipe(recipe))
@@ -209,6 +211,7 @@ export default class App extends widgy.Application{
 	}
 
 	onPathList(options){
+		this.api.otherChef = options.chef
 		this.selectedRecipe = null
 		this.selectedPane = 'list'
 	}
@@ -246,7 +249,7 @@ export default class App extends widgy.Application{
 
 	async onPathView(options){
 		if(options.chef)
-			this.otherChef = options.chef
+			this.api.otherChef = options.chef
 
 		this.selectedRecipe = await this.getRecipeById(options.recipeId, options.chef)
 
@@ -335,8 +338,8 @@ export default class App extends widgy.Application{
 	onCancelled(){
 		let options = { }
 
-		if(this.otherChef)
-			options.chef = this.otherChef
+		if(this.api.otherChef)
+			options.chef = this.api.otherChef
 
 		this.selectedPane = 'list'
 		this.selectedRecipe = null
