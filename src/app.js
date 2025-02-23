@@ -97,7 +97,7 @@ export class Api extends srch.RemoteStore{
 		if(this.otherChef)
 			return this.listByChef()
 
-		let response = await this.post('list')
+		let response = await this.post('list', { })
 		let objects = []
 
 		for(let entry of response.result){

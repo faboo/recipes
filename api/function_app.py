@@ -33,10 +33,18 @@ def getIdentity(req:func.HttpRequest, raiseErrors:bool=False) -> Identity|None:
 class Recipes:
     def __init__(self, identity:Identity|None) -> None:
         self.identity = identity
-        self.container = ContainerClient(
-            'https://%s.blob.core.windows.net' % os.getenv('blob_id'),
-            'recipe',
-            os.getenv('blob_key'))
+
+        if os.getenv('blob_connstr') is not None:
+            self.container = ContainerClient.from_connection_string(
+                os.getenv('blob_connstr'),
+                'recipe',
+                None)
+
+        else:
+            self.container = ContainerClient(
+                'https://%s.blob.core.windows.net' % os.getenv('blob_id'),
+                'recipe',
+                os.getenv('blob_key'))
 
     @property
     def chef(self) -> str|None:
