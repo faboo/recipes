@@ -9,3 +9,4 @@
 .vscode
 .coverage
 .pytest_cache
+.azurite

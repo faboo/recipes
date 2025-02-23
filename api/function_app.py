@@ -70,9 +70,10 @@ class Recipes:
         if chef is None:
             raise Exception('No chef')
 
-        logging.info('Chef: %s', chef)
+        logging.info('Chef: %s, Blobs: %s', chef, blobs)
 
         for blobProps in blobs:
+            logging.info('BlobProps: %s', blobProps)
             with self.container.get_blob_client(blob=blobProps.name) as blob:
                 content = blob.download_blob(encoding='utf-8')
                 recipe = json.load(content)
