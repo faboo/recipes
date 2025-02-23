@@ -89,6 +89,7 @@ class Recipes:
                 recipe = json.load(content)
 
                 if self.chef != chef and not recipe.get('public'):
+                    logging.info('Chef is not us and recipe is not public')
                     continue
 
                 recipe['imageUrl'] = \
