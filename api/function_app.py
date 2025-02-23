@@ -72,7 +72,9 @@ class Recipes:
 
     def list(self, chef:str|None) -> List[dict]:
         chef = self.chef if chef is None else chef
-        blobs = self.container.list_blobs(name_starts_with=f'{chef}/')
+        search = f'{chef}/'
+        logging.info('search: %s', search)
+        blobs = self.container.list_blobs(name_starts_with=search)
         recipes:List[dict] = []
 
         if chef is None:
