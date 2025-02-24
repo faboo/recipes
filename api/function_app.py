@@ -92,10 +92,12 @@ class Recipes:
                     logging.info('Chef is not us and recipe is not public')
                     continue
 
-                recipe['imageUrl'] = \
-                    'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
                 if 'image' in recipe:
+                    recipe['imageUrl'] = \
+                        'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
                     del recipe['image']
+                else if 'imageUrl' in recipe:
+                    del recipe['imageUrl']
 
                 recipes.append(recipe)
 
@@ -118,11 +120,12 @@ class Recipes:
             if chef != self.chef and not recipe.get('public'):
                 raise Exception('Not found')
 
-            recipe['imageUrl'] = \
-                'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
-
             if 'image' in recipe:
+                recipe['imageUrl'] = \
+                    'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
                 del recipe['image']
+            else if 'imageUrl' in recipe:
+                del recipe['imageUrl']
             
             return recipe
 

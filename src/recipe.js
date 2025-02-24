@@ -25,8 +25,5 @@ export class Recipe extends Model{
 		for(let idx in this.instructions){
 			this.instructions.to(idx, new Instruction(template.instructions[idx]))
 		}
-
-		if(!this.imageUrl)
-			this.imageUrl = location.origin+'/api/image/'+this.id
 	}
 }

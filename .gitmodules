@@ -1,0 +1,3 @@
+[submodule "widgy"]
+	path = widgy
+	url = https://github.com/faboo/widgy.git
