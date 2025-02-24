@@ -138,11 +138,13 @@ class Recipes:
             recipe = json.load(content)
 
             if chef != self.chef and not recipe.get('public'):
+                logging.info('Chef isn\'t us recipe isn\'t public')
                 image = None
 
-            if recipe.get('image'):
+            elif recipe.get('image'):
                 image = base64.b64decode(recipe['image'])
             else:
+                logging.info('Recipe has no image')
                 image = None
 
         return image
