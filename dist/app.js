@@ -174,7 +174,6 @@ export default class App extends widgy.Application{
 		this.identity = await this.api.init()
 
 		recipeDB.setRemoteStore(this.api)
-		await this.syncRemoteDatabase()
 		this.busy = false
 	}
 

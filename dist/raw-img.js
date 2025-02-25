@@ -15,7 +15,7 @@ export default class RawImage extends Widget {
 			else
 				this.src = 'data:image/*;base64,'+this.base64
 		else
-			this.src = ''
+			this.src = 'default_image.png'
 	}
 
 	onSrcChange(){
