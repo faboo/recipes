@@ -97,7 +97,7 @@ class Recipes:
                         recipe['imageUrl'] = \
                             'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
                     del recipe['image']
-                else if 'imageUrl' in recipe:
+                elif 'imageUrl' in recipe:
                     del recipe['imageUrl']
 
                 recipes.append(recipe)
@@ -126,7 +126,7 @@ class Recipes:
                     recipe['imageUrl'] = \
                         'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
                 del recipe['image']
-            else if 'imageUrl' in recipe:
+            elif 'imageUrl' in recipe:
                 del recipe['imageUrl']
             
             return recipe
@@ -228,7 +228,10 @@ def list(req:func.HttpRequest) -> func.HttpResponse:
         code = 500
 
 
-    return func.HttpResponse(json.dumps(response), mimetype="application/json")
+    return func.HttpResponse(
+        json.dumps(response),
+        status_code=code,
+        mimetype="application/json")
 
 
 @app.route(route='get')
