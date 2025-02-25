@@ -93,8 +93,9 @@ class Recipes:
                     continue
 
                 if 'image' in recipe:
-                    recipe['imageUrl'] = \
-                        'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
+                    if recipe['image']:
+                        recipe['imageUrl'] = \
+                            'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
                     del recipe['image']
                 else if 'imageUrl' in recipe:
                     del recipe['imageUrl']
@@ -121,8 +122,9 @@ class Recipes:
                 raise Exception('Not found')
 
             if 'image' in recipe:
-                recipe['imageUrl'] = \
-                    'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
+                if recipe['image']:
+                    recipe['imageUrl'] = \
+                        'https://recipes.halfpanda.dev/api/image/'+chef+'/'+recipe['id']
                 del recipe['image']
             else if 'imageUrl' in recipe:
                 del recipe['imageUrl']
