@@ -177,12 +177,16 @@ export default class App extends widgy.Application{
 				}
 			})
 
-		let recipeDB = this.getDatabase('recipes')
 		this.api = new Api()
 
+		this.connectRemoteStore()
+
+		this.getDatabase('recipes').setRemoteStore(this.api)
+	}
+
+	async connectRemoteStore(){
 		this.identity = await this.api.init()
 
-		recipeDB.setRemoteStore(this.api)
 		this.busy = false
 	}
 
