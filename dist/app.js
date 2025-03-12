@@ -47,7 +47,15 @@ export class Api extends srch.RemoteStore{
 	async init(){
 		try{
 			let response = await this.post('whoami')
-			let result = response.result || { roles: [] }
+			let result = { roles: [] }
+
+			if(response.ok){
+				result = response.result || { roles: [] }
+			}
+			else{
+				console.warn(`Login unsuccessful: ${response.result}`)
+				result = { roles: [] }
+			}
 
 			if(result.roles.indexOf('chef') >= 0)
 				this.#connected = true
@@ -153,6 +161,7 @@ export default class App extends widgy.Application{
 		await super.bind(context, root)
 
 		console.log('Render time: '+(new Date() - window.startLoad))
+		this.root.classList.add('rendered')
 	}
 
 	async init(){
@@ -363,9 +372,9 @@ export default class App extends widgy.Application{
 
 	onBusyChanged(){
 		if(this.busy)
-			this.root.className += ' busy'
+			this.root.classList.add('busy')
 		else
-			this.root.className = this.root.className.replace(/ ?busy ?/, '')
+			this.root.classList.remove('busy')
 	}
 }
 

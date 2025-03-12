@@ -49,3 +49,27 @@ p {
 	font-weight: bold;
 	color: gray;
 }
+html.rendered #busy {
+	top: 1vh;
+	left: initial;
+	right: 12vw;
+	font-size: 5vw;
+}
+
+footer {
+	font-size: smaller;
+}
+footer p {
+	margin-block-start: 0.5em;
+	margin-block-end: 0;
+}
+
+@media print {
+	html {
+		background: none;
+	}
+
+	footer {
+		display: none;
+	}
+}

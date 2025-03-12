@@ -464,7 +464,7 @@ export class Widgy extends LiveObject{
 				newChild = await newChild
 		}
 		else if(name in NO_RECURSE_TAG || name.startsWith('#')){
-			console.log('Skipping element: '+name)
+			//console.log('Skipping element: '+name)
 		}
 		else if(name in BUILTIN_TAG || name === rootName){
 			//console.log('Recursing into element: '+name)
