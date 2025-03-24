@@ -1,14 +1,18 @@
 from typing import cast, List
 import logging
 import os
+import io
 import uuid
 import json
 import base64
 import dataclasses
 import azure.functions as func
 from azure.storage.blob import ContainerClient
+from PIL import Image
 
 app = func.FunctionApp()
+
+IMAGE_SIZE = 512
 
 @dataclasses.dataclass
 class Identity:
@@ -33,10 +37,11 @@ def getIdentity(req:func.HttpRequest, raiseErrors:bool=False) -> Identity|None:
 class Recipes:
     def __init__(self, identity:Identity|None) -> None:
         self.identity = identity
+        blobConstr = os.getenv('blob_connstr')
 
-        if os.getenv('blob_connstr') is not None:
+        if blobConstr is not None:
             self.container = ContainerClient.from_connection_string(
-                os.getenv('blob_connstr'),
+                blobConstr,
                 'recipe',
                 None)
 
@@ -51,6 +56,36 @@ class Recipes:
         return self.identity.email if self.identity else None
 
 
+    def resizeImage(self, encoded:str) -> str:
+        decoded:bytes = base64.b64decode(encoded)
+
+        logging.info('Resizing image')
+
+        with Image.open(io.BytesIO(decoded)) as image:
+            resize = image.height > IMAGE_SIZE or image.width > IMAGE_SIZE
+                        
+            logging.info(f'Should resize? {image.height},{image.width} {resize}')
+
+            if resize:
+                if image.height > image.width:
+                    ratio = image.width / image.height
+                    height = IMAGE_SIZE
+                    width = int(IMAGE_SIZE * ratio)
+                else:
+                    ratio = image.height / image.width
+                    height = int(IMAGE_SIZE * ratio)
+                    width = IMAGE_SIZE
+
+                logging.info(f'Using size: {width},{height}')
+                image = image.resize((width, height))
+
+                with io.BytesIO() as output:
+                    image.save(output, 'png')
+                    encoded = base64.b64encode(output.getvalue()).decode('utf-8')
+
+        return encoded
+
+
     def upsert(self, recipe:dict) -> None:
         identity = cast(Identity, self.identity)
         id = recipe['id']
@@ -62,6 +97,8 @@ class Recipes:
 
             if 'imageUrl' in recipe:
                 del recipe['imageUrl']
+            if 'image' in recipe:
+                recipe['image'] = self.resizeImage(recipe['image'])
             recipe = {**existing, **recipe}
 
             block = json.dumps(recipe).encode('utf-8')
@@ -199,6 +236,8 @@ def whoami(req:func.HttpRequest) -> func.HttpResponse:
 @app.route(route='upsert')
 def upsert(req:func.HttpRequest) -> func.HttpResponse:
     code = 200
+    response:dict[str,object]
+
     try:
         request = req.get_json()
         with Recipes(getIdentity(req)) as store:
