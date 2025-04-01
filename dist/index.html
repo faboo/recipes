@@ -272,6 +272,7 @@
 </template>
 <template id="widgy-template-recipe-list-item">
 	<style>
+		/*TODO: Can this go on recipe-list instead so the auto columns line up? */
 		{
 			display: grid;
 			grid-template-columns: 
@@ -279,7 +280,7 @@
 				[view] min-content 
 				[edit] min-content 
 				[name] auto 
-				[tags] auto 
+				[tags] 30vh
 				[delete] min-content;
 			column-gap: 3px;
 			align-items: center;
