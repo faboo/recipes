@@ -30,6 +30,19 @@
 			padding: 1ex;
 		}
 
+		.question {
+			vertical-align: text-top;
+			padding: .05em;
+			border-style: solid;
+			border-width: 1.5px;
+			border-color: black;
+			border-radius: 50%;
+			margin-left: -.65em;
+			font-size: small;
+			font-weight: bolder;
+			cursor: help;
+		}
+
 		.search {
 			margin-bottom: .5rem;
 		}
@@ -65,7 +78,11 @@
 		<button id="my-recipes" class="link" onClick="onMineClicked" hidden="@application.myChef">◀ My Recipes</button>
 		<h1>Recipe Box</h1>
 		<div class="buttons">
-			<button id="login" class="link" onClick="onLoginClicked" hidden="@application.loggedIn">Login</button>
+			<div>
+				<button id="login" class="link" onClick="onLoginClicked" hidden="@application.loggedIn">Login</button>
+				<span class="question" title="If you don't have an account, recipes will still be saved locally.">&nbsp;?&nbsp;</span>
+			</div>
+
 			<button id="new-recipe" onClick="onNewClicked" hidden="@application.otherChef">New Recipe</button>
 		</div>
 	</header>
