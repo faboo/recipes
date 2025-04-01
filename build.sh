@@ -1,6 +1,6 @@
 #!/bin/bash
 
-~/me/widgy/preprocess.sh src dist
+widgy/preprocess.sh src dist
 
 cp staticwebapp.config.json dist
 

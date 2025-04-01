@@ -145,19 +145,19 @@ export default class App extends widgy.Application{
 	}
 
 	async bind(context, root){
-		await widgy.preloadWidget('recipe-list', true)
-		await widgy.preloadWidget('recipe-list-item', true)
-		await widgy.preloadWidget('raw-img', true)
+		//await widgy.preloadWidget('recipe-list', true)
+		//await widgy.preloadWidget('recipe-list-item', true)
+		//await widgy.preloadWidget('raw-img', true)
 
-		widgy.preloadWidget('edit-recipe', true)
-		widgy.preloadWidget('edit-instruction', true)
-		widgy.preloadWidget('edit-ingredient', true)
-		widgy.preloadWidget('fraction-input', true)
-		widgy.preloadWidget('move-item', true)
-		widgy.preloadWidget('upload-image', true)
+		//widgy.preloadWidget('edit-recipe', true)
+		//widgy.preloadWidget('edit-instruction', true)
+		//widgy.preloadWidget('edit-ingredient', true)
+		//widgy.preloadWidget('fraction-input', true)
+		//widgy.preloadWidget('move-item', true)
+		//widgy.preloadWidget('upload-image', true)
 
-		widgy.preloadWidget('view-recipe', true)
-		widgy.preloadWidget('view-instruction', true)
+		//widgy.preloadWidget('view-recipe', true)
+		//widgy.preloadWidget('view-instruction', true)
 
 		await super.bind(context, root)
 
