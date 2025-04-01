@@ -6,11 +6,11 @@ import {Recipe} from './recipe.js'
 export class Api extends srch.RemoteStore{
 	#connected
 
-	constructor(chef){
+	constructor(){
 		super()
 		this.#connected = false
 		this.identity = null
-		this.otherChef = chef
+		this.otherChef = null
 	}
 
 	async post(url, body){
@@ -204,6 +204,10 @@ export default class App extends widgy.Application{
 
 	async connectRemoteStore(){
 		this.identity = await this.api.init()
+
+		if(this.api.connected){
+			this.loggedIn = true
+		}
 
 		this.busy = false
 	}
