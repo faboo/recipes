@@ -152,6 +152,10 @@ export class Application extends Widgy{
 		return this.#databases[name]
 	}
 
+	databaseExists(name){
+		return name in this.#databases
+	}
+
 	async openDialog(dialogClass, bindings, context){
 		let dialogElement = document.createElement(dialogClass.safeElementName)
 		let dialogWidget = new dialogClass()

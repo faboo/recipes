@@ -128,7 +128,6 @@ export default class App extends widgy.Application{
 
 		this.title = 'Recipe Box'
 		this.identity = null
-		this.otherChef = null
 		this.api = null
 
 		this.addProperty('selectedPane', 'loading')
@@ -136,6 +135,8 @@ export default class App extends widgy.Application{
 		this.addProperty('selectedRecipe')
 		this.addProperty('busy', true, this.onBusyChanged)
 		this.addProperty('loggedIn', false)
+		this.addProperty('myChef', false)
+		this.addProperty('otherChef', null)
 
 		this.addPath('', this.onPathList.bind(this), {})
 		this.addPath('edit', this.onPathEdit.bind(this), {recipeId: Number})
@@ -164,24 +165,41 @@ export default class App extends widgy.Application{
 		this.root.classList.add('rendered')
 	}
 
+	get databaseName(){
+		let name = 'recipes'
+
+		if(this.otherChef){
+			name += '-' + this.otherChef
+		}
+
+		return name
+	}
+
 	async init(){
 		await super.init()
-
-		await this.addDatabase('recipes',
-			{ version: 3
-			, objects:
-				{ Recipe:
-					{ keyProperty: 'id'
-					, keyType: 'uuid'
-					}
-				}
-			})
 
 		this.api = new Api()
 
 		this.connectRemoteStore()
 
-		this.getDatabase('recipes').setRemoteStore(this.api)
+		await this.openDatabase()
+	}
+
+	async openDatabase(){
+		this.recipes = new widgy.LiveArray()
+
+		if(!this.databaseExists(this.databaseName)){
+			await this.addDatabase(this.databaseName,
+				{ version: 3
+				, objects:
+					{ Recipe:
+						{ keyProperty: 'id'
+						, keyType: 'uuid'
+						}
+					}
+				})
+			this.getDatabase(this.databaseName).setRemoteStore(this.api)
+		}
 	}
 
 	async connectRemoteStore(){
@@ -192,7 +210,7 @@ export default class App extends widgy.Application{
 
 	// TODO: refresh the loaded recipes
 	async syncRemoteDatabase(){
-		let recipeDB = this.getDatabase('recipes')
+		let recipeDB = this.getDatabase(this.databaseName)
 
 		console.log('Syncing data with remote database')
 
@@ -231,9 +249,17 @@ export default class App extends widgy.Application{
 	}
 
 	async onPathList(options){
-		this.api.otherChef = options.chef
+		let resetDatabase = this.otherChef != options.chef
+
+		this.otherChef = this.api.otherChef = options.chef
 		this.selectedRecipe = null
 		this.selectedPane = 'list'
+		this.myChef = !this.api.otherChef
+
+		this.title = 'Recipe Box' + (this.otherChef? ` (${this.otherChef})` : '')
+
+		if(resetDatabase)
+			await this.openDatabase()
 
 		await this.syncRemoteDatabase()
 	}
@@ -294,7 +320,7 @@ export default class App extends widgy.Application{
 	}
 
 	async onSearchClicked(event){
-		let recipeDB = this.getDatabase('recipes')
+		let recipeDB = this.getDatabase(this.databaseName)
 		let search = { }
 		let searchable = false
 
@@ -314,14 +340,14 @@ export default class App extends widgy.Application{
 		}
 
 		if(searchable){
-			let recipes = await recipeDB.search( 'Recipe', search)
+			let recipes = await recipeDB.search('Recipe', search)
 
 			this.recipes = new widgy.LiveArray(recipes.map(rc => new Recipe(rc)))
 		}
 	}
 
 	async onClearClicked(event){
-		let recipeDB = this.getDatabase('recipes')
+		let recipeDB = this.getDatabase(this.databaseName)
 		let recipes = await recipeDB.getAll('Recipe')
 
 		this.recipes = new widgy.LiveArray(recipes.map(rc => new Recipe(rc)))
@@ -363,15 +389,33 @@ export default class App extends widgy.Application{
 		if(this.api.otherChef)
 			options.chef = this.api.otherChef
 
-		this.selectedPane = 'list'
-		this.selectedRecipe = null
 		this.setLocation('', options)
 
-		this.syncRemoteDatabase()
+		this.onPathList(options)
+	}
+
+	async onCopyRecipe(event){
+		let recipe = event.data
+		this.busy = true
+
+		this.setLocation('', { })
+		await this.onPathList({ })
+
+		//TODO: Download image and reupload it?
+		recipe.id = await this.getDatabase('recipes').insert(recipe)
+		await this.recipes.push(recipe)
+		await this.syncRemoteDatabase()
+
+		this.busy = false
 	}
 
 	onLoginClicked(){
 		window.location = '/login'
+	}
+
+	onMineClicked(){
+		this.api.otherChef = null
+		this.onCancelled()
 	}
 
 	onBusyChanged(){

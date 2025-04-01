@@ -11,6 +11,7 @@ export default class RecipeList extends Widget {
 		this.addEventSlot('searchClicked')
 		this.addEventSlot('clearClicked')
 		this.addEventSlot('loginClicked')
+		this.addEventSlot('mineClicked')
 
 		this.addProperty('recipes')
 
@@ -45,5 +46,9 @@ export default class RecipeList extends Widget {
 
 	onLoginClicked(){
 		this.triggerEvent('loginClicked')
+	}
+
+	onMineClicked(){
+		this.triggerEvent('mineClicked')
 	}
 }

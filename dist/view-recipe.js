@@ -8,6 +8,7 @@ export default class ViewRecipe extends Widget {
 		super()
 
 		this.addEventSlot('closeClicked')
+		this.addEventSlot('copyClicked')
 
 		this.addProperty('recipe', null)
 	}
@@ -46,5 +47,9 @@ export default class ViewRecipe extends Widget {
 				location.origin+'/#view/recipeId='
 				+this.recipe.id
 				+'&chef='+window.currentApplication.identity.email)
+	}
+
+	onCopyClicked(){
+		this.triggerEvent('copyClicked', this.recipe)
 	}
 }

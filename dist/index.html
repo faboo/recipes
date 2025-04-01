@@ -535,7 +535,13 @@
 	<style>
 		{
 			display: grid;
-			grid-template-columns: [image] min-content [view] min-content [edit] min-content [name] auto [delete] min-content;
+			grid-template-columns: 
+				[image] min-content 
+				[view] min-content 
+				[edit] min-content 
+				[name] auto 
+				[tags] auto 
+				[delete] min-content;
 			column-gap: 3px;
 			align-items: center;
 		}
@@ -555,27 +561,45 @@
 		}
 
 		span.name {
-			grid-column: name
+			grid-column: name;
+		}
+
+		span.tags {
+			grid-column: tags;
+			font-size: smaller;
+			color: #55504d;
 		}
 
 		widgy-button.delete{
 			grid-column: delete
 		}
+
+		@media screen and (max-width: 900px) {
+			span.tags {
+				display: none;
+			}
+		}
 	</style>
 
-	<!-- <raw-img base64="@recipe.image"></raw-img> -->
 	<img src='@imgurl'></img>
 
 	<button class="view" onClick="onViewClicked">View</button>
-	<button class="edit" onClick="onEditClicked">Edit</button>
+	<button class="edit" onClick="onEditClicked" hidden="@application.otherChef">Edit</button>
 	<span class="name">{recipe.name}</span>
-	<button class="delete" onClick="onDeleteClicked">Delete</button>
+	<span class="tags">{tags}</span>
+	<button class="delete" onClick="onDeleteClicked" hidden="@application.otherChef">Delete</button>
 </template>
 <template id="widgy-template-recipe-list-item">
 	<style>
 		{
 			display: grid;
-			grid-template-columns: [image] min-content [view] min-content [edit] min-content [name] auto [delete] min-content;
+			grid-template-columns: 
+				[image] min-content 
+				[view] min-content 
+				[edit] min-content 
+				[name] auto 
+				[tags] auto 
+				[delete] min-content;
 			column-gap: 3px;
 			align-items: center;
 		}
@@ -595,21 +619,33 @@
 		}
 
 		span.name {
-			grid-column: name
+			grid-column: name;
+		}
+
+		span.tags {
+			grid-column: tags;
+			font-size: smaller;
+			color: #55504d;
 		}
 
 		widgy-button.delete{
 			grid-column: delete
 		}
+
+		@media screen and (max-width: 900px) {
+			span.tags {
+				display: none;
+			}
+		}
 	</style>
 
-	<!-- <raw-img base64="@recipe.image"></raw-img> -->
 	<img src='@imgurl'></img>
 
 	<button class="view" onClick="onViewClicked">View</button>
-	<button class="edit" onClick="onEditClicked">Edit</button>
+	<button class="edit" onClick="onEditClicked" hidden="@application.otherChef">Edit</button>
 	<span class="name">{recipe.name}</span>
-	<button class="delete" onClick="onDeleteClicked">Delete</button>
+	<span class="tags">{tags}</span>
+	<button class="delete" onClick="onDeleteClicked" hidden="@application.otherChef">Delete</button>
 </template>
 <template id="widgy-template-recipe-list">
 	<style>
@@ -620,6 +656,12 @@
 		h1 {
 			flex-grow: 1;
 			margin-right: 1em;
+		}
+
+		#my-recipes > button {
+			font-size: small;
+			position: absolute;
+			top: 1em;
 		}
 
 		.buttons {
@@ -637,11 +679,17 @@
 			padding: 1ex;
 		}
 
-		#login button {
-			border: none;
-			background: none;
-			color: blue;
-			text-decoration: underline;
+		.question {
+			vertical-align: text-top;
+			padding: .05em;
+			border-style: solid;
+			border-width: 1.5px;
+			border-color: black;
+			border-radius: 50%;
+			margin-left: -.65em;
+			font-size: small;
+			font-weight: bolder;
+			cursor: help;
 		}
 
 		.search {
@@ -676,10 +724,15 @@
 	</style>
 
 	<header>
+		<button id="my-recipes" class="link" onClick="onMineClicked" hidden="@application.myChef">◀ My Recipes</button>
 		<h1>Recipe Box</h1>
 		<div class="buttons">
-			<button id="login" onClick="onLoginClicked" hidden="@application.api.connected">Login</button>
-			<button id="new-recipe" onClick="onNewClicked">New Recipe</button>
+			<div>
+				<button id="login" class="link" onClick="onLoginClicked" hidden="@application.loggedIn">Login</button>
+				<span class="question" title="If you don't have an account, recipes will still be saved locally.">&nbsp;?&nbsp;</span>
+			</div>
+
+			<button id="new-recipe" onClick="onNewClicked" hidden="@application.otherChef">New Recipe</button>
 		</div>
 	</header>
 
@@ -719,6 +772,12 @@
 			margin-right: 1em;
 		}
 
+		#my-recipes > button {
+			font-size: small;
+			position: absolute;
+			top: 1em;
+		}
+
 		.buttons {
 			display: flex;
 			flex-direction: column;
@@ -734,11 +793,17 @@
 			padding: 1ex;
 		}
 
-		#login button {
-			border: none;
-			background: none;
-			color: blue;
-			text-decoration: underline;
+		.question {
+			vertical-align: text-top;
+			padding: .05em;
+			border-style: solid;
+			border-width: 1.5px;
+			border-color: black;
+			border-radius: 50%;
+			margin-left: -.65em;
+			font-size: small;
+			font-weight: bolder;
+			cursor: help;
 		}
 
 		.search {
@@ -773,10 +838,15 @@
 	</style>
 
 	<header>
+		<button id="my-recipes" class="link" onClick="onMineClicked" hidden="@application.myChef">◀ My Recipes</button>
 		<h1>Recipe Box</h1>
 		<div class="buttons">
-			<button id="login" onClick="onLoginClicked" hidden="@application.api.connected">Login</button>
-			<button id="new-recipe" onClick="onNewClicked">New Recipe</button>
+			<div>
+				<button id="login" class="link" onClick="onLoginClicked" hidden="@application.loggedIn">Login</button>
+				<span class="question" title="If you don't have an account, recipes will still be saved locally.">&nbsp;?&nbsp;</span>
+			</div>
+
+			<button id="new-recipe" onClick="onNewClicked" hidden="@application.otherChef">New Recipe</button>
 		</div>
 	</header>
 
@@ -972,6 +1042,7 @@
 	<button onClick="onCloseClicked">Close</button>
 	<button onClick="onPrintClicked">Print</button>
 	<button onClick="onShareClicked">Share</button>
+	<button onClick="onCopyClicked" hidden="@application.myChef">Copy</button>
 
 	<h2>Ingredients</h2>
 
@@ -1056,6 +1127,7 @@
 	<button onClick="onCloseClicked">Close</button>
 	<button onClick="onPrintClicked">Print</button>
 	<button onClick="onShareClicked">Share</button>
+	<button onClick="onCopyClicked" hidden="@application.myChef">Copy</button>
 
 	<h2>Ingredients</h2>
 
@@ -1672,6 +1744,7 @@
 				searchClicked="onSearchClicked"
 				clearClicked="onClearClicked"
 				loginClicked="onLoginClicked"
+				mineClicked="onMineClicked"
 				recipes="@recipes"/>
 		</select-pane>
 
@@ -1684,7 +1757,7 @@
 		</select-pane>
 
 		<select-pane key="view">
-			<view-recipe recipe="@selectedRecipe" closeClicked="onCancelled"/>
+			<view-recipe recipe="@selectedRecipe" closeClicked="onCancelled" copyClicked="onCopyRecipe"/>
 		</select-pane>
 	</selector>
 
