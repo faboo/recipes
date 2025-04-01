@@ -19,6 +19,16 @@ h1, h2 {
 	font-family: sans-serif;
 }
 
+widgy-button.link > button {
+	border: none;
+	background: none;
+	color: linktext;
+	text-decoration: underline;
+}
+widgy-button.link > button:hover {
+	cursor: pointer;
+}
+
 label, legend {
 	font-family: sans-serif;
 }

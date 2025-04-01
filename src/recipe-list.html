@@ -9,6 +9,12 @@
 			margin-right: 1em;
 		}
 
+		#my-recipes > button {
+			font-size: small;
+			position: absolute;
+			top: 1em;
+		}
+
 		.buttons {
 			display: flex;
 			flex-direction: column;
@@ -22,13 +28,6 @@
 		}
 		.buttons > * button {
 			padding: 1ex;
-		}
-
-		#login button {
-			border: none;
-			background: none;
-			color: blue;
-			text-decoration: underline;
 		}
 
 		.search {
@@ -63,10 +62,11 @@
 	</style>
 
 	<header>
+		<button id="my-recipes" class="link" onClick="onMineClicked" hidden="@application.myChef">◀ My Recipes</button>
 		<h1>Recipe Box</h1>
 		<div class="buttons">
-			<button id="login" onClick="onLoginClicked" hidden="@application.api.connected">Login</button>
-			<button id="new-recipe" onClick="onNewClicked">New Recipe</button>
+			<button id="login" class="link" onClick="onLoginClicked" hidden="@application.loggedIn">Login</button>
+			<button id="new-recipe" onClick="onNewClicked" hidden="@application.otherChef">New Recipe</button>
 		</div>
 	</header>
 

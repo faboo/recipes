@@ -40,6 +40,7 @@
 				searchClicked="onSearchClicked"
 				clearClicked="onClearClicked"
 				loginClicked="onLoginClicked"
+				mineClicked="onMineClicked"
 				recipes="@recipes"/>
 		</select-pane>
 
@@ -52,7 +53,7 @@
 		</select-pane>
 
 		<select-pane key="view">
-			<view-recipe recipe="@selectedRecipe" closeClicked="onCancelled"/>
+			<view-recipe recipe="@selectedRecipe" closeClicked="onCancelled" copyClicked="onCopyRecipe"/>
 		</select-pane>
 	</selector>
 

@@ -11,6 +11,7 @@ export default class RecipeListItem extends Widget {
 
 		this.addProperty('recipe', null, this.onRecipeChanged)
 		this.addProperty('imgurl', 'default_image.png')
+		this.addProperty('tags', '')
 
 		this.onRecipeContentChanged = this.onRecipeContentChanged.bind(this)
 	}
@@ -26,6 +27,7 @@ export default class RecipeListItem extends Widget {
 		if(this.recipe){
 			this.recipe.imageProperty.addEventListener('setvalue', this.onRecipeContentChanged)
 			this.recipe.imageUrlProperty.addEventListener('setvalue', this.onRecipeContentChanged)
+			this.tags = this.recipe.tags.join(', ')
 		}
 	}
 
