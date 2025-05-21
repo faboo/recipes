@@ -97,7 +97,7 @@ class Recipes:
 
             if 'imageUrl' in recipe:
                 del recipe['imageUrl']
-            if 'image' in recipe:
+            if recipe.get('image'):
                 recipe['image'] = self.resizeImage(recipe['image'])
             recipe = {**existing, **recipe}
 
