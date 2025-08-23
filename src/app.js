@@ -131,7 +131,7 @@ export default class App extends widgy.Application{
 		this.api = null
 
 		this.addProperty('selectedPane', 'loading')
-		this.addProperty('recipes', new widgy.LiveArray())
+		this.addProperty('recipes', new widgy.LiveArray([], Recipe))
 		this.addProperty('selectedRecipe')
 		this.addProperty('busy', true, this.onBusyChanged)
 		this.addProperty('loggedIn', false)
@@ -198,7 +198,12 @@ export default class App extends widgy.Application{
 						}
 					}
 				})
-			this.getDatabase(this.databaseName).setRemoteStore(this.api)
+			let database = this.getDatabase(this.databaseName)
+
+			database.addEventListener('insert', this.onDatabaseInsert.bind(this))
+			database.addEventListener('update', this.onDatabaseUpdate.bind(this))
+			database.addEventListener('remove', this.onDatabaseRemove.bind(this))
+			database.setRemoteStore(this.api)
 		}
 	}
 
@@ -233,6 +238,28 @@ export default class App extends widgy.Application{
 		}
 
 		this.busy = false
+	}
+
+	onDatabaseInsert(event){
+		if(event.remote){
+			this.recipes.push(event.data)
+		}
+	}
+
+	onDatabaseUpdate(event){
+		if(event.remote){
+			let recipe = this.recipes.find(rc => rc.id == event.data.id)
+
+			recipe.loadFromTemplate(event.data)
+		}
+	}
+
+	onDatabaseRemove(event){
+		if(event.remote){
+			let index = this.recipes.findIndex(rc => rc.id == event.data.id)
+
+			this.recipes.splice(index, 1)
+		}
 	}
 
 	async getRecipeById(recipeId, chef){
