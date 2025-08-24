@@ -22,26 +22,6 @@ export default class ViewRecipe extends Widget {
 	}
 
 	onShareClicked(){
-		/*
-		this.application.busy = true
-
-		let recipe = this.recipe.toPOJO()
-		let recipeJson
-		let shareUrl
-
-		delete recipe.image
-		recipeJson = JSON.stringify(recipe)
-		shareUrl = new URL(location)
-
-		// This should work but doesn't
-		//shareUrl.hash = "#view/recipeJSON="+encodeURIComponent(recipeJson)
-		shareUrl.hash = ''
-		shareUrl = String(shareUrl)+'#view/recipeJSON='+encodeURIComponent(recipeJson)
-
-		navigator.clipboard.writeText(shareUrl)
-
-		this.application.busy = false
-		*/
 		if(window.currentApplication.identity)
 			navigator.clipboard.writeText(
 				location.origin+'/#view/recipeId='

@@ -1,10 +1,10 @@
-export {LiveValue} from './events.js'
+export {LiveValue, ValueChangeEvent, SlottedEvent} from './events.js'
 export {Widgy} from './base.js'
 export {Widget} from './widget.js'
 export {Application} from './application.js'
 export {Model, LiveObject, LiveArray} from './model.js'
 export {View, ArrayView} from './view.js'
-export {RemoteStore, Dropbox} from './storage.js'
+export {RemoteStore, Dropbox, DatabaseEvent} from './storage.js'
 
 import {Widgy} from './base.js'
 import {Application} from './application.js'

@@ -1,0 +1,38 @@
+<template>
+	<style>
+		{
+			display: inline-block;
+		}
+
+		div.combo-container{
+			position: relative;
+			width: 100%;
+			height: 100%;
+		}
+
+		div.edit-container{
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 1em;
+		}
+
+		input {
+			height: 100%;
+			width: 100%;
+		}
+		
+		select {
+			width: 100%;
+		}
+	</style>
+
+	<div class="combo-container">
+		<div class="edit-container" hidden="@hideInput">
+			<input type="text" value="@=selected"></input>
+		</div>
+		<select name="@name" autocomplete="@autocomplete" value="@=selected">
+		</select>
+	</div>
+</template>

@@ -72,6 +72,14 @@ export class Fn extends SearchOption{
 	}
 }
 
+export class DatabaseEvent extends Event{
+	constructor(name, remote, data){
+		super(name, {bubbles: true})
+		this.remote = Boolean(remote)
+		this.data = data === undefined? null : data 
+	}
+}
+
 export class Database extends EventTarget{
 	static{
 	}
@@ -103,10 +111,10 @@ export class Database extends EventTarget{
 		this.addEventListener('remote-disconnect', callback)
 	}
 	triggerRemoteConnectEvent(){
-		this.dispatchEvent(new Event('remote-connect', {bubbles: true}))
+		this.dispatchEvent(new DatabaseEvent('remote-connect', true, this.#remoteStore))
 	}
 	triggerRemoteDisconnectEvent(){
-		this.dispatchEvent(new Event('remote-disconnect', {bubbles: true}))
+		this.dispatchEvent(new DatabaseEvent('remote-disconnect', true, this.#remoteStore))
 	}
 
 	async open(){
@@ -194,6 +202,8 @@ export class Database extends EventTarget{
 				console.error(ex)
 			}
 
+		this.dispatchEvent(new DatabaseEvent('insert', false, object))
+
 		return id
 	}
 
@@ -219,6 +229,8 @@ export class Database extends EventTarget{
 			catch(ex){
 				console.error(ex)
 			}
+
+		this.dispatchEvent(new DatabaseEvent('update', false, object))
 	}
 
 	async removeById(objectId, objectName){
@@ -234,6 +246,8 @@ export class Database extends EventTarget{
 			catch(ex){
 				console.error(ex)
 			}
+
+		this.dispatchEvent(new DatabaseEvent('remove', false, object))
 	}
 
 	async getById(objectId, objectName){
@@ -396,10 +410,14 @@ export class Database extends EventTarget{
 							object.modified_time = remoteObject.modified.toUTCString()
 
 							try{
-								if(localObject)
+								if(localObject){
 									await promise(store.put(object))
-								else
+									this.dispatchEvent(new DatabaseEvent('update', true, object))
+								}
+								else{
 									await promise(store.add(object))
+									this.dispatchEvent(new DatabaseEvent('insert', true, object))
+								}
 							}
 							catch(ex){
 								console.error(ex)

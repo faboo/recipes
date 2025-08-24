@@ -66,7 +66,7 @@ export class Widgy extends LiveObject{
 		for(let idx = 0; idx < styleParts.length; idx++){
 			let rule = styleParts[idx].trimStart()
 
-			if(rule.length && !rule.startsWith('@media')){
+			if(rule.length && !rule.startsWith('@')){
 				if(rule[0] == '{'){
 					styleParts[idx] = '\n'+prefix+' '+rule
 				}
@@ -104,7 +104,7 @@ export class Widgy extends LiveObject{
 		}
 
 		if(template){
-			for(let node of template.content.children){
+			for(let node of Array.prototype.slice.call(template.content.childNodes)){
 				if(node.nodeName == 'STYLE'){
 					let style = Widgy.processStyle(safeName, node.textContent)
 					let styleElement = document.createElement('style')
@@ -114,6 +114,9 @@ export class Widgy extends LiveObject{
 
 					document.head.appendChild(styleElement)
 
+					template.content.removeChild(node)
+				}
+				else if(node.nodeName == '#text' && node.nodeValue.match('^\\s*$')){
 					template.content.removeChild(node)
 				}
 			}
@@ -143,7 +146,7 @@ export class Widgy extends LiveObject{
 				widgetClass = module.default
 			}
 			catch(ex){
-				if(ex instanceof TypeError && ex.message.includes('dynamically imported module')){
+				if(ex instanceof TypeError && ex.message.includes('module')){
 					try{
 						module = await import(Widgy.customWidgetBase+'/'+name+'.js')
 
@@ -207,6 +210,7 @@ export class Widgy extends LiveObject{
 	root
 	#children
 	#eventSlots
+	#bindings
 	// TODO: Move this concept into Widget
 	#attributeSlots
 
@@ -215,10 +219,26 @@ export class Widgy extends LiveObject{
 		this.#eventSlots = {}
 		this.#attributeSlots = []
 		this.#children = {}
+		this.#bindings = []
 	}
 
 	get children(){
 		return this.#children
+	}
+
+	sleep(until, msdelay){
+		if(!msdelay)
+			msdelay = 1
+
+		return new Promise((resolve) => {
+			function finished(){
+				if(until())
+					resolve(true)
+				else
+					setTimeout(finished, msdelay)
+			}
+			setTimeout(finished, msdelay)
+		})
 	}
 
 	firstElement(selector){
@@ -252,6 +272,13 @@ export class Widgy extends LiveObject{
 
 	hasEventSlot(name){
 		return name in this.#eventSlots
+	}
+
+	createBindingExpression(binding, context, target, targetName){
+		let bind = new BindingExpression(binding, context, target, targetName)
+		this.#bindings.push(bind)
+
+		return bind
 	}
 
 	bindEvent(name, context, callback){
@@ -328,12 +355,17 @@ export class Widgy extends LiveObject{
 	async bind(context, root){
 	}
 
+	unbind(){
+		for(let binding of this.#bindings)
+			binding.destroy()
+	}
+
 	resolveCompositeValue(context, target, name, value){
 		let resolvedValue = value
 
 		if(value){
 			if(value.startsWith('@')){
-				resolvedValue = new BindingExpression(
+				resolvedValue = this.createBindingExpression(
 					value.slice(1),
 					context,
 					target,

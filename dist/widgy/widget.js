@@ -1,5 +1,5 @@
 import {Widgy} from './base.js'
-import {LiveValue, BindingExpression} from './events.js'
+import {isListenable, BindingExpression} from './events.js'
 
 
 export class Widget extends Widgy{
@@ -19,6 +19,7 @@ export class Widget extends Widgy{
 
 		this.addProperty('application')
 		this.addProperty('parent')
+		this.addProperty('shown', null, this.onShownChanged)
 
 		/* Drag and Drop */
 		this.addProperty('dragdata')
@@ -43,6 +44,11 @@ export class Widget extends Widgy{
 
 	get bound(){
 		return this.#bound
+	}
+
+	onShownChanged(){
+		if(this.shown !== null)
+			this.hidden = !this.shown
 	}
 
 	addProperty(name, initialValue, onChange, coerceType){
@@ -142,21 +148,6 @@ export class Widget extends Widgy{
 		}
 	}
 
-	sleep(until, msdelay){
-		if(!msdelay)
-			msdelay = 1
-
-		return new Promise((resolve) => {
-			function finished(){
-				if(until())
-					resolve(true)
-				else
-					setTimeout(finished, msdelay)
-			}
-			setTimeout(finished, msdelay)
-		})
-	}
-
 	createRoot(){
 		let elementName = this.safeElementName
 
@@ -173,10 +164,10 @@ export class Widget extends Widgy{
 			if(this.hasEventSlot(attr.name)){
 				this.bindEvent(attr.name, context, attr.value)
 			}
-			else if(this[attr.name] instanceof LiveValue){
+			else if(isListenable(this[attr.name])){
 				this.bindProperty(context, attr.name, attr.value)
 			}
-			else if(this[attr.name+'Property'] instanceof LiveValue){
+			else if(isListenable(this[attr.name+'Property'])){
 				this.bindProperty(context, attr.name+'Property', attr.value)
 			}
 			else{

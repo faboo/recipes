@@ -1,0 +1,61 @@
+<template>
+	<style>
+		> * {
+			display: inline-block;
+		}
+
+		span.enumeral{
+			vertical-align: middle;
+		}
+
+		div.edit > * {
+			margin-right: .5vw;
+			vertical-align: middle;
+		}
+
+		text-input {
+			width: 20vw;
+		}
+
+		widgy-button {
+			vertical-align: middle;
+		}
+
+		.move-grip {
+			display: inline-block;
+			width: 1.4em;
+			height: 100%;
+			border-style: solid;
+			border-width: 1px;
+			border-radius: 2px;
+			border-color: #bcbcc5;
+			background: #e9e9ed;
+		}
+		.move-grip::after {
+			display: block;
+			content: "⫼";
+			transform: rotate(90deg);
+			padding-left: .5ex;
+		}
+	</style>
+
+	<div class="edit">
+		<!-- up="onUp" down="onDown"></move-item> -->
+		<div class='move-grip' draghandle="true"></div>
+		<fraction-input fraction="@=ingredient.amount"></fraction-input>
+		<select autocomplete="true" selected="@=ingredient.unit" editable="true">
+			<option></option>
+			<option>g</option>
+			<option>%</option>
+			<option>cup</option>
+			<option>tbsp</option>
+			<option>tsp</option>
+			<option>oz</option>
+			<option>floz</option>
+			<option>pinch</option>
+			<option>inch</option>
+		</select>
+		<text-input class="ingredient" text="@=ingredient.what" placeholder="Ingredient Name"></text-input>
+	</div>
+	<button onClick="onRemoveClicked">Remove</button>
+</template>

@@ -27,7 +27,19 @@ export default class ItemsView extends Widget{
 	}
 
 	getTemplate(root){
-		return root.querySelector('template').content
+		let template = null
+
+		for(let child of root.children)
+			if(child.localName == 'template')
+				template = child
+
+		if(template === null){
+			template = document.createElement('template')
+			while(root.children.length)
+				template.content.appendChild(root.children[0])
+		}
+
+		return template.content
 	}
 
 	async bind(context, root){
@@ -38,7 +50,7 @@ export default class ItemsView extends Widget{
 
 		if(this.items)
 			for(let idx = 0; idx < this.items.length; ++idx){
-				let element = this.createItemElement()
+				let element = this.createItemElement(this.items[idx])
 
 				await this.bindItemElement(element, this.items[idx], idx)
 
@@ -46,7 +58,7 @@ export default class ItemsView extends Widget{
 			}
 	}
 
-	createItemElement(){
+	createItemElement(item){
 		let root = document.createElement('item-view')
 
 		root.appendChild(this.#template.cloneNode(true))
@@ -97,7 +109,7 @@ export default class ItemsView extends Widget{
 						}
 					}
 					else{
-						let element = this.createItemElement()
+						let element = this.createItemElement(this.items[idx])
 
 						// No need to wait for this.
 						this.bindItemElement(element, this.items[idx], idx)

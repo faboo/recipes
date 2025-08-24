@@ -5,10 +5,14 @@ export function isListenable(object){
 		object.addEventListener
 		&& 
 		object.removeEventListener
+		&&
+		object.addListener
+		&&
+		'value' in object
 		)
 }
 
-class ValueChangeEvent extends Event{
+export class ValueChangeEvent extends Event{
 	#name
 	#object
 	#value
@@ -157,6 +161,145 @@ export class LiveValue extends EventTarget{
 }
 
 
+class DeadValue extends EventTarget{
+	#name
+	#object
+
+	constructor(name, object){
+		super()
+		this.#name = name
+		this.#object = object
+	}
+
+	get name(){
+		return this.#name
+	}
+
+	get object(){
+		return this.#object
+	}
+
+	get value(){
+		return this.#object[this.#name]
+	}
+
+	set value(value){
+		this.#object[this.#name] = value
+	}
+
+	get changing(){
+		return false
+	}
+
+	addListener(listener){
+		let event = new ValueChangeEvent(this)
+
+		// The value will never change, but we're expected to fire at least
+		// once.
+
+		if(listener instanceof Function)
+			listener(event)
+		else
+			listener.handleEvent(event)
+	}
+}
+
+
+export class CompositeValue extends EventTarget{
+	#value
+	#name
+	#object
+	#watch
+	#evaluate
+	#changing
+	#onWatchChanged
+
+	constructor(name, object, watchProperties, evaluateCallback){
+		super()
+		this.#name = name
+		this.#object = object
+		this.#changing = true
+		this.#watch = watchProperties
+		this.#evaluate = evaluateCallback.bind(object)
+		this.#value = null
+		this.#onWatchChanged = this.onWatchChanged.bind(this)
+
+		for(let watch of this.#watch){
+			watch.addEventListener('setvalue', this.#onWatchChanged)
+			if(isListenable(watch.value))
+				watch.value.addEventListener('setvalue', this.#onWatchChanged)
+		}
+
+		this.onWatchChanged()
+	}
+
+	get name(){
+		return this.#name
+	}
+
+	get object(){
+		return this.#object
+	}
+
+	get value(){
+		return this.#value
+	}
+
+	set value(value){
+		// do nothing
+	}
+
+	get changing(){
+		return this.#changing
+	}
+
+	async recalculate(){
+		this.#changing = true
+		let value = this.#evaluate(this.#watch.map(wc => wc.value))
+		if(value instanceof Promise)
+			value = await value
+		this.#value = value
+		this.#changing = false
+	}
+
+	async onWatchChanged(event){
+		this.#changing = true
+
+		if(event instanceof ValueChangeEvent){
+			let newValue = event.value
+			let oldValue = event.oldValue
+
+			if(isListenable(oldValue))
+				oldValue.removeEventListener('setvalue', this.#onWatchChanged)
+			if(isListenable(newValue))
+				newValue.addEventListener('setvalue', this.#onWatchChanged)
+		}
+
+		let value = this.#evaluate(this.#watch.map(wc => wc.value))
+
+		if(value instanceof Promise)
+			value = await value
+
+		if(value != this.#value){
+			let oldValue = this.#value
+			this.#value = value
+			this.dispatchEvent(new ValueChangeEvent(this, oldValue))
+		}
+		this.#changing = false
+	}
+
+	addListener(listener){
+		let event = new ValueChangeEvent(this)
+		this.addEventListener('setvalue', listener)
+
+		if(listener instanceof Function)
+			listener(event)
+		else
+			listener.handleEvent(event)
+	}
+}
+
+
 export const BooleanAttributes =
 	[ 'hidden'
 	]
@@ -228,6 +371,7 @@ export const BindingDirection =
 
 export class BindingExpression extends EventTarget{
 	#onSourceChanged
+	#onTargetChanged
 
 	binding
 	direction
@@ -243,6 +387,7 @@ export class BindingExpression extends EventTarget{
 		super()
 
 		this.#onSourceChanged = this.onSourceChanged.bind(this)
+		this.#onTargetChanged = this.onTargetChanged.bind(this)
 
 		this.binding = binding
 
@@ -280,8 +425,18 @@ export class BindingExpression extends EventTarget{
 		if(name){
 			liveValue = object[name]
 
-			if(!(liveValue instanceof EventTarget))
-				liveValue = object[propertyName]
+			if(!(liveValue instanceof EventTarget)){
+				if(object instanceof HTMLElement && !(propertyName in object)){
+					liveValue = new LiveAttribute(liveValue, name, object)
+					liveValue.bind(object)
+				}
+				else if(isListenable(object[propertyName])){
+					liveValue = object[propertyName]
+				}
+				else{
+					liveValue = new DeadValue(name, object)
+				}
+			}
 		}
 
 		return liveValue
@@ -302,7 +457,7 @@ export class BindingExpression extends EventTarget{
 	}
 
 	bindTarget(){
-		this.targetValue.addListener(this.onTargetChanged.bind(this))
+		this.targetValue.addListener(this.#onTargetChanged)
 	}
 
 	bindSource(){
@@ -317,7 +472,7 @@ export class BindingExpression extends EventTarget{
 		}
 
 		this.sourceValues.push(live)
-		if(live instanceof LiveValue)
+		if(isListenable(live))
 			live.addListener(this.#onSourceChanged)
 		else
 			this.onSourceChanged({value: live})
@@ -372,12 +527,19 @@ export class BindingExpression extends EventTarget{
 
 			if(this.setTarget)
 				if(this.targetValue)
-					this.targetValue.value = this.source
+					this.targetValue.value = this.currentValue
 				else if(this.target)
 					this.target[this.targetName] = this.currentValue
 
 			this.dispatchEvent(new ValueChangeEvent(this, oldValue))
 		}
+	}
+
+	destroy(){
+		for(let value of this.sourceValues)
+			value.removeEventListener('setvalue', this.#onSourceChanged)
+
+		this.targetValue.removeEventListener('setvalue', this.#onTargetChanged)
 	}
 }
 
@@ -488,7 +650,7 @@ export class LiveText{
 }
 
 
-class SlottedEvent extends Event{
+export class SlottedEvent extends Event{
 	data
 
 	constructor(widget, data){

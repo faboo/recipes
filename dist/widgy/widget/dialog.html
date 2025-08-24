@@ -1,0 +1,39 @@
+<template>
+	<style>
+		{
+			margin-top: 4vh;
+			padding: 1ex;
+			border-width: .1rem;
+			border-radius: .2rem;
+		}
+
+		>header {
+			display: block;
+			background: #4444;
+		}
+		>content{
+			display: block;
+			margin: 1ex;
+		}
+		>buttons{
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: space-evenly;
+		}
+		>buttons button{
+			min-width: 8vh;
+		}
+		
+	</style>
+
+	<dialog open>
+		<header></header>
+
+		<content></content>
+
+		<hr />
+
+		<buttons></buttons>
+	</dialog>
+</template>

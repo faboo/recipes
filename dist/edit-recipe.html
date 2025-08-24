@@ -1,0 +1,97 @@
+<template>
+	<style>
+		item-view{
+			display: block;
+		}
+
+		upload-image {
+			vertical-align: middle;
+		}
+
+		img.share {
+			width: .7em;
+		}
+
+		fieldset {
+			margin-top: 1rem;
+		}
+
+		span.enumeral{
+			display: inline-block;
+			min-width: 1.5em;
+		}
+		#edit-ingredients span.enumeral{
+			vertical-align: middle;
+		}
+		span.enumeral::after{
+			content: "."
+		}
+
+		#edit-ingredients{
+			display: block;
+		}
+		#edit-ingredients item-view {
+			margin-bottom: 1ex;
+		}
+
+		edit-ingredient {
+			display: inline-block;
+			padding: 2px;
+		}
+		edit-ingredient.dropover {
+			background: #36b6;
+		}
+	</style>
+
+	<h1>Recipe</h1>
+	
+	<div>
+		<text-input text="@=editRecipe.name" placeholder="Recipe Name"></text-input>
+
+		<button onClick="onSaveClicked">Save</button>
+		<button onClick="onCancelClicked">Cancel</button>
+		<checkbox checked="@=editRecipe.public">Public</checkbox>
+
+		<upload-image image="@=editRecipe.image" image-url="@editRecipe.imageUrl"></upload-image>
+	</div>
+
+	<div>
+		<label>Tags <text-input text="@=tags"></text-input></label>
+	</div>
+
+	<fieldset>
+		<legend>Ingredients</legend>
+
+		<items-view items="@editRecipe.ingredients" id="edit-ingredients">
+			<template>
+				<span class="enumeral">{index}</span>
+				<edit-ingredient
+					ingredient="@item"
+					index="@index"
+					moveUp="context.onMoveIngredientUp"
+					moveDown="context.onMoveIngredientDown"
+					removeClicked="context.onRemoveIngredient"
+					droptarget="true"
+					dragdata="@index"
+					dragdatatype="ingredientIndex"
+					></edit-ingredient>
+			</template>
+		</items-view>
+
+		<button onClick="onAddIngredient">Add</button>
+
+	</fieldset>
+
+	<fieldset>
+		<legend>Instructions</legend>
+
+		<items-view items="@editRecipe.instructions">
+			<template>
+				<edit-instruction instruction="@item" index="@index" removeClicked="context.onRemoveInstruction"></edit-instruction>
+			</template>
+		</items-view>
+
+		<button onClick="onAddInstruction">Add</button>
+	</fieldset>
+
+</template>

@@ -1,0 +1,41 @@
+<template>
+	<style>
+		{
+			display: flex;
+			flex-direction: column;
+		}
+
+		buttons {
+			display: block;
+		}
+		buttons button {
+			border-width: 1px;
+			border-color: lightgray;
+			border-style: solid;
+			border-bottom-style: none;
+			border-top-left-radius: 3px;
+			border-top-right-radius: 3px;
+			border-bottom-left-radius: 0px;
+			border-bottom-right-radius: 0px;
+			padding: .4em;
+		}
+		buttons widgy-button {
+			vertical-align: bottom;
+		}
+		buttons widgy-button.selected button {
+			padding: .6em;
+		}
+		> content {
+			flex-grow: 2;
+			display: block;
+			border-width: 1px;
+			border-color: lightgray;
+			border-style: solid;
+			padding: 1ex;
+		}
+	</style>
+
+	<buttons></buttons>
+	<content></content>
+</template>
+

@@ -1,4 +1,4 @@
-import {LiveValue} from './events.js'
+import {LiveValue, CompositeValue, isListenable} from './events.js'
 
 export class LiveObject{
 	addProperty(name, initialValue, onChange, coerceType){
@@ -12,6 +12,27 @@ export class LiveObject{
 				}
 			, [nameProperty]:
 				{ value: new LiveValue(initialValue, name, this, coerceType)
+				, writable: false
+				, enumerable: false
+				}
+			})
+
+		if(onChange){
+			this[nameProperty].addEventListener('setvalue', onChange.bind(this))
+		}
+	}
+
+	addCompositeProperty(name, watchProperties, evaluateCallback, onChange){
+		let nameProperty = name+'Property'
+		Object.defineProperties(
+			this,
+			{ [name]:
+				{ get: () => this[nameProperty].value
+				, set: (value) => this[nameProperty].value
+				, enumerable: true
+				}
+			, [nameProperty]:
+				{ value: new CompositeValue(name, this, watchProperties, evaluateCallback)
 				, writable: false
 				, enumerable: false
 				}
@@ -77,7 +98,7 @@ export class LiveObject{
 	getPropertyString(property){
 		let value = this.getPropertyValue(property)
 
-		if(value instanceof LiveValue)
+		if(isListenable(value))
 			value = value.value
 
 		return String(value)
@@ -134,15 +155,28 @@ export class LiveArray extends Array{
 
 	#dispatchItemChanged
 	#eventTarget
+	#model
 
-	constructor(contents){
+	constructor(contents, model){
 		super()
 		this.#dispatchItemChanged = this.dispatchItemChanged.bind(this)
 		this.#eventTarget = new EventTarget()
+		this.#model = model
+
+		Object.defineProperty(
+			this,
+			'lengthProperty',
+			{ value: new LiveValue(0, 'length', this, Number)
+			, writable: false
+			, enumerable: false
+			})
 
 		if(contents){
-			for(let item of contents)
+			for(let item of contents){
+				if(model && !(item instanceof model))
+					item = new model(item)
 				this.push(item)
+			}
 		}
 	}
 
@@ -165,16 +199,24 @@ export class LiveArray extends Array{
 		return this[index].value
 	}
 
-	to(index, value){
-		this[index].value  = value
+	to(index, item){
+		if(this.#model && !(item instanceof this.#model))
+			item = new this.#model(item)
+
+		this[index].value = item
 	}
 
 	push(item){
+		if(this.#model && !(item instanceof this.#model))
+			item = new this.#model(item)
+
 		let live = new LiveValue(
 			item,
 			null,
 			this)
 		let result = super.push(live)
+
+		this.lengthProperty.value = this.length
 
 		live.addEventListener('setvalue', this.#dispatchItemChanged)
 		this.dispatchItemChanged()
@@ -185,6 +227,8 @@ export class LiveArray extends Array{
 	pop(){
 		let live = super.pop()
 
+		this.lengthProperty.value = this.length
+
 		live.removeEventListener('setvalue', this.#dispatchItemChanged)
 		this.dispatchItemChanged()
 
@@ -193,6 +237,8 @@ export class LiveArray extends Array{
 
 	shift(){
 		let live = super.shift()
+
+		this.lengthProperty.value = this.length
 
 		live.removeEventListener('setvalue', this.#dispatchItemChanged)
 		this.dispatchItemChanged()
@@ -207,6 +253,8 @@ export class LiveArray extends Array{
 			this)
 		let result = super.unshift(live)
 
+		this.lengthProperty.value = this.length
+
 		live.addEventListener('setvalue', this.#dispatchItemChanged)
 		this.dispatchItemChanged()
 
@@ -217,8 +265,12 @@ export class LiveArray extends Array{
 		let deletedDead = []
 
 		for(let idx = 2; idx < arguments.length; ++idx){
+			let item = arguments[idx]
+			if(this.#model && !(item instanceof this.#model))
+				item = new this.#model(item)
+
 			arguments[idx] = new LiveValue(
-					arguments[idx],
+					item,
 					null,
 					this)
 			arguments[idx].addEventListener('setvalue', this.#dispatchItemChanged)
@@ -228,6 +280,8 @@ export class LiveArray extends Array{
 			item.removeEventListener('setvalue', this.#dispatchItemChanged)
 			deletedDead.push(item.value)
 		}
+
+		this.lengthProperty.value = this.length
 
 		this.dispatchItemChanged()
 
@@ -243,8 +297,20 @@ export class LiveArray extends Array{
 		return values
 	}
 
+	filter(func){
+		let filtered = super.filter(item => func(item.value))
+
+		return new LiveArray(filtered, this.#model)
+	}
+
 	findIndex(func){
 		return super.findIndex(item => func(item.value))
+	}
+
+	find(func){
+		let item = super.find(item => func(item.value))
+
+		return item !== undefined? item.value : undefined
 	}
 
 	join(sep){
@@ -261,8 +327,6 @@ export class LiveArray extends Array{
 	// entries
 	// every
 	// fill
-	// filter
-	// find
 	// flatMap
 	// forEach
 	// includes
@@ -275,7 +339,6 @@ export class LiveArray extends Array{
 	// reverse
 	// slice
 	// some
-	// sort
 
 	addEventListener(type, listener){
 		this.#eventTarget.addEventListener(type, listener)
@@ -306,12 +369,12 @@ export class LiveArray extends Array{
 
 export class Model extends LiveObject{
     loadFromTemplate(template){
-		if(template instanceof LiveValue)
+		if(isListenable(template))
 			template = template.value
 
         for(let prop in this){
             if(prop in template){
-				if(this[prop] instanceof LiveArray){
+				if(this[prop] instanceof Array){
 					this[prop].splice(0)
 					
 					for(let item of template[prop]){

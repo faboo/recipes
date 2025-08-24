@@ -1,0 +1,24 @@
+<template>
+	<style>
+		widgy-textarea{
+			height: 15ex;
+			width: 70vh;
+		}
+		.enumeral {
+			width: 2em;
+		}
+		widgy-button{
+			display: block;
+			margin-bottom: 2ex;
+			margin-top: .5ex;
+			margin-left: 60vh;
+		}
+		span.enumeral{
+			vertical-align: top;
+		}
+	</style>
+
+	<span class="enumeral">{index}</span>
+	<textarea text="@=instruction.text"></textarea>
+	<button onClick="onRemoveClicked">Remove</button>
+</template>

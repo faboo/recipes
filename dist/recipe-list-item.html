@@ -1,0 +1,59 @@
+<template>
+	<style>
+		/*TODO: Can this go on recipe-list instead so the auto columns line up? */
+		{
+			display: grid;
+			grid-template-columns: 
+				[image] min-content 
+				[view] min-content 
+				[edit] min-content 
+				[name] 2fr
+				[tags] 1fr
+				[delete] min-content;
+			column-gap: 3px;
+			align-items: center;
+		}
+
+		img {
+			width: 4rem;
+			height: 4rem;
+			grid-column: image
+		}
+
+		widgy-button.view{
+			grid-column: view;
+		}
+
+		widgy-button.edit{
+			grid-column: edit;
+		}
+
+		span.name {
+			grid-column: name;
+		}
+
+		span.tags {
+			grid-column: tags;
+			font-size: smaller;
+			color: #55504d;
+		}
+
+		widgy-button.delete{
+			grid-column: delete
+		}
+
+		@media screen and (max-width: 900px) {
+			span.tags {
+				display: none;
+			}
+		}
+	</style>
+
+	<img src='@imgurl'></img>
+
+	<button class="view" onClick="onViewClicked">View</button>
+	<button class="edit" onClick="onEditClicked" hidden="@application.otherChef">Edit</button>
+	<span class="name">{recipe.name}</span>
+	<span class="tags">{tags}</span>
+	<button class="delete" onClick="onDeleteClicked" hidden="@application.otherChef">Delete</button>
+</template>

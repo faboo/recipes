@@ -1,4 +1,3 @@
-import {Widget} from '../widget.js'
 import ItemsView from './items-view.js'
 
 export default class Select extends ItemsView{

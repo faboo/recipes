@@ -1,0 +1,125 @@
+<template>
+	<style>
+		> header {
+			display: flex;
+		}
+
+		h1 {
+			flex-grow: 1;
+			margin-right: 1em;
+		}
+
+		#my-recipes > button {
+			font-size: small;
+			position: absolute;
+			top: 1em;
+		}
+
+		.buttons {
+			display: flex;
+			flex-direction: column;
+			flex-wrap: wrap-reverse;
+			justify-content: space-between;
+			align-content: space-around;
+		}
+
+		.buttons > * {
+			align-self: center;
+		}
+		.buttons > * button {
+			padding: 1ex;
+		}
+
+		.question {
+			vertical-align: text-top;
+			padding: .05em;
+			border-style: solid;
+			border-width: 1.5px;
+			border-color: black;
+			border-radius: 50%;
+			margin-left: -.65em;
+			font-size: small;
+			font-weight: bolder;
+			cursor: help;
+		}
+		.question:hover {
+			color: linktext;
+			border-color: linktext;
+		}
+
+		@media not (hover: hover){
+			.question {
+				display: none;
+			}
+		}
+
+
+		.search {
+			margin-bottom: .5rem;
+		}
+
+		.search > * {
+			display: inline-block;
+			margin: .1rem;
+		}
+
+		items-view {
+			display: block;
+			height: 68vh;
+			background: #ffffff50;
+			border-width: 1px;
+			border-style: solid;
+			border-color: gray;
+			overflow: auto;
+		}
+
+		item-view {
+			display: block;
+			padding-top: .2em;
+			padding-bottom: .2em;
+			padding-left: .5em;
+			padding-right: .5em;
+		}
+		item-view:nth-child(even) {
+			background: #00000021;
+		}
+	</style>
+
+	<header>
+		<button id="my-recipes" class="link" onClick="onMineClicked" hidden="@application.myChef">◀ My Recipes</button>
+		<h1>Recipe Box</h1>
+		<div class="buttons">
+			<div>
+				<button id="login" class="link" onClick="onLoginClicked" hidden="@application.loggedIn">Login</button>
+				<span class="question" title="If you don't have an account, recipes will still be saved locally.">&nbsp;?&nbsp;</span>
+			</div>
+
+			<button id="new-recipe" onClick="onNewClicked" hidden="@application.otherChef">New Recipe</button>
+		</div>
+	</header>
+
+	<fieldset class="search">
+		<legend>Search</legend>
+
+		<label>Name <text-input text="@<nameSearch"></text-input></label>
+
+		<label>Ingredients <text-input text="@<ingredientSearch"></text-input></label>
+
+		<label>Tags <text-input text="@<tagSearch"></text-input></label>
+
+		<button onClick="onSearchClicked" default="true">Search</button>
+
+		<button onClick="onClearClicked">Clear</button>
+	</fieldset>
+
+	<items-view id="recipe-list" items="@recipes">
+		<template>
+			<recipe-list-item
+				recipe="@item"
+				editClicked="context.onEditClicked"
+				viewClicked="context.onViewClicked"
+				deleteClicked="context.onDeleteClicked"
+				></recipe-list-item>
+		</template>
+	</items-view>
+</template>
