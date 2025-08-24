@@ -250,7 +250,8 @@ export default class App extends widgy.Application{
 		if(event.remote){
 			let recipe = this.recipes.find(rc => rc.id == event.data.id)
 
-			recipe.loadFromTemplate(event.data)
+			if(recipe)
+				recipe.loadFromTemplate(event.data)
 		}
 	}
 
