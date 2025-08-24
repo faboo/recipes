@@ -9,6 +9,881 @@
 	</script>
 
 	<!-- WIDGY:PRE -->
+<template id="widgy-template-edit-ingredient">
+	<style>
+		> * {
+			display: inline-block;
+		}
+
+		span.enumeral{
+			vertical-align: middle;
+		}
+
+		div.edit > * {
+			margin-right: .5vw;
+			vertical-align: middle;
+		}
+
+		text-input {
+			width: 20vw;
+		}
+
+		widgy-button {
+			vertical-align: middle;
+		}
+
+		.move-grip {
+			display: inline-block;
+			width: 1.4em;
+			height: 100%;
+			border-style: solid;
+			border-width: 1px;
+			border-radius: 2px;
+			border-color: #bcbcc5;
+			background: #e9e9ed;
+		}
+		.move-grip::after {
+			display: block;
+			content: "⫼";
+			transform: rotate(90deg);
+			padding-left: .5ex;
+		}
+	</style>
+
+	<div class="edit">
+		<!-- up="onUp" down="onDown"></move-item> -->
+		<div class='move-grip' draghandle="true"></div>
+		<fraction-input fraction="@=ingredient.amount"></fraction-input>
+		<select autocomplete="true" selected="@=ingredient.unit" editable="true">
+			<option></option>
+			<option>g</option>
+			<option>%</option>
+			<option>cup</option>
+			<option>tbsp</option>
+			<option>tsp</option>
+			<option>oz</option>
+			<option>floz</option>
+			<option>pinch</option>
+			<option>inch</option>
+		</select>
+		<text-input class="ingredient" text="@=ingredient.what" placeholder="Ingredient Name"></text-input>
+	</div>
+	<button onClick="onRemoveClicked">Remove</button>
+</template>
+<template id="widgy-template-edit-instruction">
+	<style>
+		widgy-textarea{
+			height: 15ex;
+			width: 70vh;
+		}
+		.enumeral {
+			width: 2em;
+		}
+		widgy-button{
+			display: block;
+			margin-bottom: 2ex;
+			margin-top: .5ex;
+			margin-left: 60vh;
+		}
+		span.enumeral{
+			vertical-align: top;
+		}
+	</style>
+
+	<span class="enumeral">{index}</span>
+	<textarea text="@=instruction.text"></textarea>
+	<button onClick="onRemoveClicked">Remove</button>
+</template>
+<template id="widgy-template-edit-recipe">
+	<style>
+		item-view{
+			display: block;
+		}
+
+		upload-image {
+			vertical-align: middle;
+		}
+
+		img.share {
+			width: .7em;
+		}
+
+		fieldset {
+			margin-top: 1rem;
+		}
+
+		span.enumeral{
+			display: inline-block;
+			min-width: 1.5em;
+		}
+		#edit-ingredients span.enumeral{
+			vertical-align: middle;
+		}
+		span.enumeral::after{
+			content: "."
+		}
+
+		#edit-ingredients{
+			display: block;
+		}
+		#edit-ingredients item-view {
+			margin-bottom: 1ex;
+		}
+
+		edit-ingredient {
+			display: inline-block;
+			padding: 2px;
+		}
+		edit-ingredient.dropover {
+			background: #36b6;
+		}
+	</style>
+
+	<h1>Recipe</h1>
+	
+	<div>
+		<text-input text="@=editRecipe.name" placeholder="Recipe Name"></text-input>
+
+		<button onClick="onSaveClicked">Save</button>
+		<button onClick="onCancelClicked">Cancel</button>
+		<checkbox checked="@=editRecipe.public">Public</checkbox>
+
+		<upload-image image="@=editRecipe.image" image-url="@editRecipe.imageUrl"></upload-image>
+	</div>
+
+	<div>
+		<label>Tags <text-input text="@=tags"></text-input></label>
+	</div>
+
+	<fieldset>
+		<legend>Ingredients</legend>
+
+		<items-view items="@editRecipe.ingredients" id="edit-ingredients">
+			<template>
+				<span class="enumeral">{index}</span>
+				<edit-ingredient
+					ingredient="@item"
+					index="@index"
+					moveUp="context.onMoveIngredientUp"
+					moveDown="context.onMoveIngredientDown"
+					removeClicked="context.onRemoveIngredient"
+					droptarget="true"
+					dragdata="@index"
+					dragdatatype="ingredientIndex"
+					></edit-ingredient>
+			</template>
+		</items-view>
+
+		<button onClick="onAddIngredient">Add</button>
+
+	</fieldset>
+
+	<fieldset>
+		<legend>Instructions</legend>
+
+		<items-view items="@editRecipe.instructions">
+			<template>
+				<edit-instruction instruction="@item" index="@index" removeClicked="context.onRemoveInstruction"></edit-instruction>
+			</template>
+		</items-view>
+
+		<button onClick="onAddInstruction">Add</button>
+	</fieldset>
+
+</template>
+<template id="widgy-template-fraction-input">
+	<style>
+		> *{
+			vertical-align: middle;
+		}
+		number-input {
+			width: 5.5em;
+			margin-right: -2.25em;
+		}
+		number-input input{
+			padding-right: 2em;
+		}
+		span.fractional{
+			display: inline-block;
+			width: .5em;
+		}
+		div.buttons{
+			display: inline-block;
+			width: .8em;
+			margin-left: .2em;
+			margin-right: .1em;
+		}
+
+		widgy-button{
+			display: block;
+			width: 100%;
+			height: 1.3ex;
+		}
+		button{
+			display: block;
+			width: 100%;
+			height: 100%;
+			padding: 0;
+			font-size: 50%;
+			font-weight: bold;
+			border-radius: 0;
+			border-width: 0;
+			color: #9d9da9;
+		}
+		widgy-button.down button > content{
+			transform: rotate(180deg);
+			display: inline-block;
+		}
+
+	</style>
+	<number-input number="@=fraction.whole" min="0" step="1"></number-input>
+	<span class="fractional">{fractional}</span>
+	<div class="buttons">
+		<button onClick="onUpClicked">⌃</button>
+		<button class='down' onClick="onDownClicked">⌃</button>
+	</div>
+</template>
+<template id="widgy-template-move-item">
+	<style>
+		{
+			display: inline-block;
+			width: 1em;
+		}
+		widgy-button{
+			display:block;
+			width: 100%;
+		}
+		button{
+			display:block;
+			width: 100%;
+			padding:0;
+			font-size: 50%;
+			border-radius: 0;
+			border-width: 1px;
+			border-color: #bcbcc5;
+			background: #e9e9ed;
+		}
+	</style>
+
+	<button onClick="onUpClicked">▲</button>
+	<button onClick="onDownClicked">▼</button>
+</template>
+<template id="widgy-template-raw-img">
+</template>
+<template id="widgy-template-recipe-list-item">
+	<style>
+		/*TODO: Can this go on recipe-list instead so the auto columns line up? */
+		{
+			display: grid;
+			grid-template-columns: 
+				[image] min-content 
+				[view] min-content 
+				[edit] min-content 
+				[name] 2fr
+				[tags] 1fr
+				[delete] min-content;
+			column-gap: 3px;
+			align-items: center;
+		}
+
+		img {
+			width: 4rem;
+			height: 4rem;
+			grid-column: image
+		}
+
+		widgy-button.view{
+			grid-column: view;
+		}
+
+		widgy-button.edit{
+			grid-column: edit;
+		}
+
+		span.name {
+			grid-column: name;
+		}
+
+		span.tags {
+			grid-column: tags;
+			font-size: smaller;
+			color: #55504d;
+		}
+
+		widgy-button.delete{
+			grid-column: delete
+		}
+
+		@media screen and (max-width: 900px) {
+			span.tags {
+				display: none;
+			}
+		}
+	</style>
+
+	<img src='@imgurl'></img>
+
+	<button class="view" onClick="onViewClicked">View</button>
+	<button class="edit" onClick="onEditClicked" hidden="@application.otherChef">Edit</button>
+	<span class="name">{recipe.name}</span>
+	<span class="tags">{tags}</span>
+	<button class="delete" onClick="onDeleteClicked" hidden="@application.otherChef">Delete</button>
+</template>
+<template id="widgy-template-recipe-list">
+	<style>
+		{
+			display: flex;
+			flex-direction: column;
+			height: calc(100vh - 4em);
+		}
+
+		> header {
+			display: flex;
+		}
+
+		h1 {
+			flex-grow: 1;
+			margin-right: 1em;
+		}
+
+		#my-recipes > button {
+			font-size: small;
+			position: absolute;
+			top: 1em;
+		}
+
+		.buttons {
+			display: flex;
+			flex-direction: column;
+			flex-wrap: wrap-reverse;
+			justify-content: space-between;
+			align-content: space-around;
+		}
+
+		.buttons > * {
+			align-self: center;
+		}
+		.buttons > * button {
+			padding: 1ex;
+		}
+
+		.question {
+			vertical-align: text-top;
+			padding: .05em;
+			border-style: solid;
+			border-width: 1.5px;
+			border-color: black;
+			border-radius: 50%;
+			margin-left: -.65em;
+			font-size: small;
+			font-weight: bolder;
+			cursor: help;
+		}
+		.question:hover {
+			color: linktext;
+			border-color: linktext;
+		}
+
+		@media not (hover: hover){
+			.question {
+				display: none;
+			}
+		}
+
+
+		.search {
+			margin-bottom: .5rem;
+		}
+
+		.search > * {
+			display: inline-block;
+			margin: .1rem;
+		}
+
+		items-view {
+			display: block;
+			background: #ffffff50;
+			border-width: 1px;
+			border-style: solid;
+			border-color: gray;
+			overflow: auto;
+		}
+
+		item-view {
+			display: block;
+			padding-top: .2em;
+			padding-bottom: .2em;
+			padding-left: .5em;
+			padding-right: .5em;
+		}
+		item-view:nth-child(even) {
+			background: #00000021;
+		}
+	</style>
+
+	<header>
+		<button id="my-recipes" class="link" onClick="onMineClicked" hidden="@application.myChef">◀ My Recipes</button>
+		<h1>Recipe Box</h1>
+		<div class="buttons">
+			<div>
+				<button id="login" class="link" onClick="onLoginClicked" hidden="@application.loggedIn">Login</button>
+				<span class="question" title="If you don't have an account, recipes will still be saved locally.">&nbsp;?&nbsp;</span>
+			</div>
+
+			<button id="new-recipe" onClick="onNewClicked" hidden="@application.otherChef">New Recipe</button>
+		</div>
+	</header>
+
+	<fieldset class="search">
+		<legend>Search</legend>
+
+		<label>Name <text-input text="@<nameSearch"></text-input></label>
+
+		<label>Ingredients <text-input text="@<ingredientSearch"></text-input></label>
+
+		<label>Tags <text-input text="@<tagSearch"></text-input></label>
+
+		<button onClick="onSearchClicked" default="true">Search</button>
+
+		<button onClick="onClearClicked">Clear</button>
+	</fieldset>
+
+	<items-view id="recipe-list" items="@recipes">
+		<template>
+			<recipe-list-item
+				recipe="@item"
+				editClicked="context.onEditClicked"
+				viewClicked="context.onViewClicked"
+				deleteClicked="context.onDeleteClicked"
+				></recipe-list-item>
+		</template>
+	</items-view>
+</template>
+<template id="widgy-template-upload-image">
+	<style>
+		{
+			display: inline-block;
+			position: relative;
+		}
+		input {
+			display: none;
+		}
+		img {
+			height: 4rem;
+			width: 4rem;
+			position: relative;
+		}
+		#upload-image-url {
+			z-index: 1;
+			position: absolute;
+		}
+		#upload-image-local {
+			z-index: 2;
+		}
+		widgy-button{
+			position: absolute;
+			right: .25rem;
+			bottom: .25rem;
+			z-index: 3;
+		}
+		button{
+			border-style: none;
+			background: none;
+			color: #bb1717;
+			font-size: 1.2rem;
+			text-shadow: #fff 0 0 3px;
+		}
+	</style>
+	<img id="upload-image-url" src="@image-url" hidden='@cleared'></img>
+	<img id="upload-image-local" src="@imageObject">
+	<input
+		type="file"
+		accept="image/*">
+	<button onClick="onClearClicked" hidden='@hideClear'>ⓧ</button>
+</template>
+<template id="widgy-template-view-instruction">
+	<style>
+		span.amount {
+			color: blue;
+			font-weight: bold;
+			font-size: smaller;
+		}
+	</style>
+	<html-view html="@instructionHtml"><html-view>
+</template>
+<template id="widgy-template-view-recipe">
+	<style>
+		item-view{
+			display: block;
+		}
+
+		span.enumeral::after{
+			content: "."
+		}
+
+		#view-image {
+			float: right;
+			max-height: 25vh;
+			max-width: 25vw;
+		}
+
+		#view-ingredients span.enumeral{
+			vertical-align: top;
+			margin-left: .5em;
+			display: inline-block;
+			min-width: 1.5em;
+		}
+
+		#view-ingredients{
+			display: block;
+		}
+		#view-ingredients item-view {
+			margin-bottom: 1ex;
+		}
+		#view-ingredients item-view > * {
+			margin-right: .5em;
+		}
+		#view-ingredients .amount {
+			display: inline-block;
+			min-width: 4em;
+		}
+		#view-ingredients fraction-input{
+			display: inline-block;
+			width: 3em;
+			margin-right: .75em;
+		}
+
+		#view-instructions span.enumeral {
+			font-size: larger;
+			font-weight: bold;
+			margin-right: .5em;
+		}
+
+		@media print {
+			button {
+				display: none;
+			}
+		}
+	</style>
+
+	<!--<raw-img id='view-image' base64="@recipe.image"></raw-img>-->
+	<img id='view-image' src="@recipe.imageUrl"></img>
+
+	<h1>{recipe.name}</h1>
+
+	<button onClick="onCloseClicked">Close</button>
+	<button onClick="onPrintClicked">Print</button>
+	<button onClick="onShareClicked">Share</button>
+	<button onClick="onCopyClicked" hidden="@application.myChef">Copy</button>
+
+	<h2>Ingredients</h2>
+
+	<items-view items="@recipe.ingredients" id="view-ingredients">
+		<template>
+			<span class="enumeral">{index}</span>
+			<span class="amount"><span>{item.amount}</span> <span>{item.unit}</span></span>
+			<span>{item.what}</span>
+		</template>
+	</items-view>
+
+	<h2>Instructions</h2>
+
+	<items-view items="@recipe.instructions" id="view-instructions">
+		<template>
+			<view-instruction recipe="@context.recipe" instruction="@item" index="@index"></view-instruction>
+		</template>
+	</items-view>
+
+</template>
+
+<template id="widgy-template-button">
+	<style>
+		{
+			display: inline-block;
+		}
+	</style>
+	<button><content></content></button>
+</template>
+<template id="widgy-template-checkbox">
+	<style>
+	</style>
+
+	<label>
+		<input key="input" type="checkbox" checked="@=checked">
+		<content></content>
+	</label>
+</template>
+<template id="widgy-template-data-table">
+	<style>
+		{
+			display: block;
+			overflow-y: scroll;
+		}
+
+		table {
+			width: 100%;
+			position: relative;
+		}
+
+		thead {
+			position: sticky;
+			top: 0;
+			display: block;
+			z-index: 1;
+			width: 100%;
+		}
+
+		tbody {
+			display: block;
+			position: relative;
+			width: 100%;
+		}
+
+		tr {
+			display: block;
+			width: 100%;
+		}
+
+		th, td {
+			display: inline-block;
+		}
+
+		tbody tr {
+			position: absolute;
+		}
+	</style>
+
+	<table>
+		<thead>
+		</thead>
+
+		<tbody>
+		</tbody>
+	</table>
+</template>
+
+<template id="widgy-template-dialog">
+	<style>
+		{
+			margin-top: 4vh;
+			padding: 1ex;
+			border-width: .1rem;
+			border-radius: .2rem;
+		}
+
+		>header {
+			display: block;
+			background: #4444;
+		}
+		>content{
+			display: block;
+			margin: 1ex;
+		}
+		>buttons{
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: space-evenly;
+		}
+		>buttons button{
+			min-width: 8vh;
+		}
+		
+	</style>
+
+	<dialog open>
+		<header></header>
+
+		<content></content>
+
+		<hr />
+
+		<buttons></buttons>
+	</dialog>
+</template>
+<template id="widgy-template-html-view">
+</template>
+<template id="widgy-template-items-view">
+	<content></content>
+</template>
+
+<template id="widgy-template-number-input">
+	<style>
+		{
+			display: inline-block;
+		}
+		input {
+			width: 100%;
+		}
+	</style>
+
+	<input
+		type='number'
+		placeholder='@placeholder'
+		value='@=number'
+		min='@min'
+		max='@max'
+		step='@step'/>
+</template>
+
+<template id="widgy-template-number-view">
+	<span>{view}</span>
+</template>
+<template id="widgy-template-ok-cancel-dialog">
+	<style>
+		h2{
+			margin-top: 0;
+			padding: .5ex;
+		}
+	</style>
+
+	<header>
+		<h2>{title}</h2>
+	</header>
+
+	<content>
+		<p>{message}</p>
+	</content>
+
+	<buttons>
+		<button onClick="okClicked">{ok-text}</button>
+		<button onClick="cancelClicked">{cancel-text}</button>
+	</buttons>
+</template>
+
+<template id="widgy-template-ok-dialog">
+	<style>
+		h2{
+			margin-top: 0;
+			padding: .5ex;
+		}
+	</style>
+
+	<header>
+		<h2>{title}</h2>
+	</header>
+
+	<content>
+		<p>{message}</p>
+	</content>
+
+	<buttons>
+		<button onClick="okClicked">{button-text}</button>
+	</buttons>
+</template>
+
+<template id="widgy-template-select-pane">
+	<content></content>
+</template>
+<template id="widgy-template-select">
+	<style>
+		{
+			display: inline-block;
+		}
+
+		div.combo-container{
+			position: relative;
+			width: 100%;
+			height: 100%;
+		}
+
+		div.edit-container{
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 1em;
+		}
+
+		input {
+			height: 100%;
+			width: 100%;
+		}
+		
+		select {
+			width: 100%;
+		}
+	</style>
+
+	<div class="combo-container">
+		<div class="edit-container" hidden="@hideInput">
+			<input type="text" value="@=selected"></input>
+		</div>
+		<select name="@name" autocomplete="@autocomplete" value="@=selected">
+		</select>
+	</div>
+</template>
+<template id="widgy-template-selector">
+	<content>
+	</content>
+</template>
+<template id="widgy-template-tabs">
+	<style>
+		{
+			display: flex;
+			flex-direction: column;
+		}
+
+		buttons {
+			display: block;
+		}
+		buttons button {
+			border-width: 1px;
+			border-color: lightgray;
+			border-style: solid;
+			border-bottom-style: none;
+			border-top-left-radius: 3px;
+			border-top-right-radius: 3px;
+			border-bottom-left-radius: 0px;
+			border-bottom-right-radius: 0px;
+			padding: .4em;
+		}
+		buttons widgy-button {
+			vertical-align: bottom;
+		}
+		buttons widgy-button.selected button {
+			padding: .6em;
+		}
+		> content {
+			flex-grow: 2;
+			display: block;
+			border-width: 1px;
+			border-color: lightgray;
+			border-style: solid;
+			padding: 1ex;
+		}
+	</style>
+
+	<buttons></buttons>
+	<content></content>
+</template>
+
+<template id="widgy-template-text-input">
+	<style>
+		{
+			display: inline-block;
+		}
+		input {
+			width: 100%;
+		}
+	</style>
+
+	<input type='text' placeholder='@placeholder' value='@=text' />
+</template>
+<template id="widgy-template-textarea">
+	<style>
+		{
+			display: inline-block;
+		}
+
+		textarea {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+	<textarea placeholder='@placeholder' value='@=text'></textarea>
+</template>
+
 
 	<link rel="manifest" href="manifest.json">
 	<link rel="stylesheet" href="style.css">
